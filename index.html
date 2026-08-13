@@ -1,0 +1,593 @@
+<!DOCTYPE html>
+<!--
+  TODO prima del lancio — dipendenze esterne ancora aperte:
+
+  1. DOMINIO: sostituire ovunque la stringa https://DOMINIO con il dominio
+     definitivo. Compare in: canonical, og:url, og:image, twitter:image e nel
+     JSON-LD (url, image).
+  2. DATI LEGALI: riempire [RAGIONE_SOCIALE], [P_IVA] e [INDIRIZZO] nel footer,
+     e pubblicare /privacy.html e /cookie.html.
+  3. FAVICON E ICONE: il cliente deve fornire favicon-32.png, favicon-192.png
+     e apple-touch-icon.png in /assets/. La riga per l'SVG è commentata sotto:
+     va riattivata quando il logo vettoriale sarà disponibile.
+  4. FOTO GALLERIA: la griglia non ha più i riquadri vuoti, ma i tre scatti
+     che mostra sono riusati da altre sezioni e tenuti insieme da un duotone
+     magenta. Servono foto vere del locale (serata, bancone, gente). Quando
+     arrivano: sostituire i src nelle tile e togliere la classe
+     `gallery__grid--placeholder` dal contenitore, che disattiva il duotone.
+  5. HERO: hero-bg.webp è 1200px nativi ma viene reso più largo su desktop.
+     Serve l'originale ad alta risoluzione per generare le varianti 1600/2000.
+-->
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BEVO — Cocktail bar a Roma Furio Camillo | Bevo e n'ce penso</title>
+  <meta name="description" content="Cocktail bar e pub a Furio Camillo, Roma. Aperitivo da 12€ dalle 18 alle 21, drink d'autore e serate a tema. Prenota su WhatsApp.">
+  <meta name="robots" content="index, follow, max-image-preview:large">
+  <meta name="theme-color" content="#000000">
+  <link rel="canonical" href="https://DOMINIO/">
+
+  <link rel="icon" href="/assets/favicon-32.png" sizes="32x32">
+  <link rel="icon" href="/assets/favicon-192.png" sizes="192x192">
+  <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+  <!-- <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml"> -->
+
+  <meta property="og:locale" content="it_IT">
+  <meta property="og:site_name" content="BEVO">
+  <meta property="og:title" content="BEVO — Cocktail Bar a Furio Camillo, Roma">
+  <meta property="og:description" content="Cocktail bar e pub a Furio Camillo. Aperitivo dalle 18 alle 21, drink d'autore, aperto martedì-domenica fino alle 2.">
+  <meta property="og:type" content="restaurant.bar">
+  <meta property="og:url" content="https://DOMINIO/">
+  <meta property="og:image" content="https://DOMINIO/assets/img/hero-bg.webp">
+  <!-- Dimensioni reali del file. hero-bg.webp è 1200x675 (16:9), non il
+       1200x630 canonico dell'Open Graph: dichiarare misure sbagliate farebbe
+       ritagliare male l'anteprima. TODO: immagine social dedicata 1200x630. -->
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="675">
+
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="BEVO — Cocktail Bar a Furio Camillo, Roma">
+  <meta name="twitter:description" content="Cocktail bar e pub a Furio Camillo. Aperitivo dalle 18 alle 21, drink d'autore, aperto martedì-domenica fino alle 2.">
+  <meta name="twitter:image" content="https://DOMINIO/assets/img/hero-bg.webp">
+
+  <!-- I font sono ospitati in locale (vedi gli @font-face in cima a style.css):
+       niente più preconnect né foglio di stile da Google, e quindi nessuna
+       richiesta a terzi prima del consenso.
+
+       Il preload copre i soli sottoinsiemi `latin`, che sono quelli che questa
+       pagina usa davvero: i `latin-ext` restano dichiarati per sicurezza ma
+       vengono scaricati solo se compare un carattere che li richiede, ed è
+       giusto che sia il browser a deciderlo.
+
+       `crossorigin` è obbligatorio anche se il file è nostro: i font vengono
+       richiesti sempre in modalità CORS, e senza l'attributo il preload
+       finisce in una cache separata da quella che userà @font-face — il file
+       verrebbe scaricato due volte. -->
+  <link rel="preload" as="font" type="font/woff2" href="assets/fonts/anton-latin.woff2" crossorigin>
+  <link rel="preload" as="font" type="font/woff2" href="assets/fonts/inter-latin.woff2" crossorigin>
+
+  <!-- Immagine LCP: la si annuncia prima che il parser arrivi alla hero. -->
+  <link rel="preload" as="image" href="assets/img/hero-bg.webp"
+        imagesrcset="assets/img/hero-bg-800.webp 800w, assets/img/hero-bg.webp 1200w"
+        imagesizes="100vw" fetchpriority="high">
+
+  <link rel="stylesheet" href="css/style.css">
+
+  <!-- Marca il documento come "animabile" PRIMA del primo disegno: è questa
+       classe che fa applicare l'opacità 0 agli elementi con [data-reveal].
+       Deve stare inline e qui, non in un file: caricata dopo, si vedrebbe un
+       lampo di contenuto già visibile che poi sparisce.
+       Se JavaScript è disattivato la classe non viene mai messa, la regola CSS
+       non si applica e la pagina resta interamente leggibile. Se invece GSAP
+       non si carica, è motion.js a rimuoverla. -->
+  <script>document.documentElement.classList.add('js-motion');</script>
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BarOrPub",
+    "name": "BEVO",
+    "address": {
+      "@type": "PostalAddress",
+      "streetAddress": "Via Giovanni Villani 48",
+      "addressLocality": "Roma",
+      "postalCode": "00179",
+      "addressCountry": "IT"
+    },
+    "telephone": "+393426747449",
+    "url": "https://DOMINIO/",
+    "image": ["https://DOMINIO/assets/img/hero-bg.webp"],
+    "priceRange": "€€",
+    "acceptsReservations": "https://wa.me/393426747449",
+    "servesCuisine": ["Cocktail", "Aperitivo", "Cucina romana"],
+    "hasMenu": "https://www.leggimenu.it/menu/7hqk3faj7pt1",
+    "geo": {
+      "@type": "GeoCoordinates",
+      "latitude": "41.8693142",
+      "longitude": "12.5171454"
+    },
+    "openingHoursSpecification": [
+      {
+        "@type": "OpeningHoursSpecification",
+        "dayOfWeek": ["Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"],
+        "opens": "18:00",
+        "closes": "02:00"
+      },
+      {
+        "@type": "OpeningHoursSpecification",
+        "dayOfWeek": "Monday",
+        "opens": "00:00",
+        "closes": "00:00"
+      }
+    ],
+    "sameAs": ["https://www.instagram.com/bevo.roma/"]
+  }
+  </script>
+</head>
+<body>
+
+  <a class="skip-link" href="#main">Vai al contenuto</a>
+  <a class="skip-link" href="#dove-siamo">Vai a dove siamo</a>
+
+  <!-- Grana di pellicola sopra tutta la pagina. Puramente decorativa: fuori
+       dal flusso, non cliccabile, invisibile agli screen reader. -->
+  <div class="grain" aria-hidden="true"></div>
+
+  <nav class="site-nav" id="site-nav" aria-label="Navigazione principale">
+    <a href="#top" class="site-nav__logo" aria-label="BEVO — torna in cima">
+      <!-- Header sempre visibile: questo logo è above-the-fold, niente lazy.
+           Quelli nell'overlay e nel footer restano lazy. -->
+      <img src="assets/img/bevo-logo-200.webp" alt="BEVO" width="200" height="64" decoding="async" class="site-nav__logo-img">
+    </a>
+
+    <ul class="site-nav__links">
+      <li><a href="#chi-siamo">Chi siamo</a></li>
+      <li><a href="#menu">Menu</a></li>
+      <li><a href="#aperitivo">Aperitivo</a></li>
+      <li><a href="#eventi">Eventi</a></li>
+      <li><a href="#galleria">Galleria</a></li>
+      <li><a href="#dove-siamo">Dove siamo</a></li>
+    </ul>
+
+    <div class="site-nav__actions">
+      <a href="https://www.instagram.com/bevo.roma/" class="site-nav__icon-link" target="_blank" rel="noopener" aria-label="Instagram di BEVO (si apre in una nuova scheda)">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5"></rect><circle cx="12" cy="12" r="4"></circle><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"></circle></svg>
+      </a>
+      <a href="https://wa.me/393426747449?text=Ciao%20BEVO%21%20Vorrei%20prenotare%20un%20tavolo%2C%20mi%20dite%20le%20disponibilit%C3%A0%3F" class="btn btn--primary btn--xs site-nav__cta" target="_blank" rel="noopener">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 21l1.65-4.95A8 8 0 1112 20a8 8 0 01-6.4-3.2z"></path></svg>
+        Prenota ora<span class="sr-only"> (si apre in una nuova scheda)</span>
+      </a>
+      <button type="button" class="site-nav__toggle" id="site-nav-toggle" aria-expanded="false" aria-controls="site-nav-overlay" aria-label="Apri il menu">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5h16"></path><path d="M4 12h16"></path><path d="M4 19h16"></path></svg>
+      </button>
+    </div>
+  </nav>
+
+  <div class="site-nav__overlay" id="site-nav-overlay" role="dialog" aria-modal="true" aria-label="Menu di navigazione" aria-hidden="true">
+    <div class="site-nav__overlay-top">
+      <a href="#top" class="site-nav__logo" aria-label="BEVO — torna in cima">
+        <img src="assets/img/bevo-logo-200.webp" alt="BEVO" width="200" height="64" loading="lazy" decoding="async" class="site-nav__logo-img">
+      </a>
+      <div class="site-nav__overlay-actions">
+        <a href="https://www.instagram.com/bevo.roma/" class="site-nav__icon-link" target="_blank" rel="noopener" aria-label="Instagram di BEVO (si apre in una nuova scheda)">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5"></rect><circle cx="12" cy="12" r="4"></circle><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"></circle></svg>
+        </a>
+        <button type="button" class="site-nav__overlay-close" id="site-nav-overlay-close" aria-label="Chiudi il menu">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18"></path><path d="m6 6 12 12"></path></svg>
+        </button>
+      </div>
+    </div>
+
+    <div class="site-nav__overlay-center">
+      <ul class="site-nav__overlay-links">
+        <li><a href="#chi-siamo">Chi siamo</a></li>
+        <li><a href="#menu">Menu</a></li>
+        <li><a href="#aperitivo">Aperitivo</a></li>
+        <li><a href="#eventi">Eventi</a></li>
+        <li><a href="#galleria">Galleria</a></li>
+        <li><a href="#dove-siamo">Dove siamo</a></li>
+      </ul>
+      <a href="https://wa.me/393426747449?text=Ciao%20BEVO%21%20Vorrei%20prenotare%20un%20tavolo%2C%20mi%20dite%20le%20disponibilit%C3%A0%3F" class="btn btn--primary btn--xs site-nav__overlay-cta" target="_blank" rel="noopener">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 21l1.65-4.95A8 8 0 1112 20a8 8 0 01-6.4-3.2z"></path></svg>
+        Prenota ora<span class="sr-only"> (si apre in una nuova scheda)</span>
+      </a>
+    </div>
+  </div>
+
+  <header class="hero" id="top">
+    <div class="hero__bg">
+      <img class="hero__bg-img" src="assets/img/hero-bg.webp"
+             srcset="assets/img/hero-bg-800.webp 800w, assets/img/hero-bg.webp 1200w"
+             sizes="100vw" width="1200" height="675"
+             fetchpriority="high" loading="eager" decoding="async"
+             alt="" role="presentation">
+      <div class="hero__bg-overlay"></div>
+    </div>
+
+    <div class="hero__content">
+      <div class="hero__logo-wrap">
+        <img class="hero__logo" data-reveal src="assets/img/bevo-logo.webp" alt="BEVO" width="680" height="217" fetchpriority="high" decoding="async">
+      </div>
+
+      <p class="hero__claim" data-reveal>Bevo e n'ce penso</p>
+
+      <ul class="hero__info" data-reveal aria-label="Informazioni sul locale">
+        <li class="hero__info-item">
+          <svg class="hero__info-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 12 4.207 4.207A.707.707 0 0 1 4.707 3h14.586a.707.707 0 0 1 .5 1.207z"></path><path d="M12 12v10"></path><path d="M7 22h10"></path></svg>
+          <span>Cocktail bar</span>
+        </li>
+        <li class="hero__info-item">
+          <svg class="hero__info-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 10c0 6-9 12-9 12s-9-6-9-12a9 9 0 1118 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+          <span>Via Giovanni Villani 48, Furio Camillo</span>
+        </li>
+        <li class="hero__info-item hero__status" id="hero-status">
+          <svg class="hero__info-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><path d="M12 6v6l4 2"></path></svg>
+          <span class="hero__status-dot" aria-hidden="true"></span>
+          <span class="hero__status-text" id="hero-status-text">Verifica orario…</span>
+        </li>
+      </ul>
+
+      <div class="hero__actions" data-reveal>
+        <a href="https://wa.me/393426747449?text=Ciao%20BEVO%21%20Vorrei%20prenotare%20un%20tavolo%2C%20mi%20dite%20le%20disponibilit%C3%A0%3F" class="btn btn--primary" target="_blank" rel="noopener">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 21l1.65-4.95A8 8 0 1112 20a8 8 0 01-6.4-3.2z"></path></svg>
+          Prenota ora<span class="sr-only"> (si apre in una nuova scheda)</span>
+        </a>
+        <a href="#menu" class="btn btn--outline ">Scopri il menu</a>
+
+      </div>
+    </div>
+
+    <div class="hero__scroll-indicator" aria-hidden="true">
+      <div class="hero__scroll-track">
+        <div class="hero__scroll-dot"></div>
+      </div>
+    </div>
+  </header>
+
+  <main id="main">
+
+    <section class="about" id="chi-siamo" aria-labelledby="chi-siamo-title">
+      <!-- L'h1 era una riga a sé sopra l'eyebrow, che esisteva solo per avere
+           un h1 dentro <main> senza far concorrenza al titolo di sezione: si
+           leggeva come una didascalia capitata lì per sbaglio.
+           Ora l'h1 È il titolo della sezione — un solo elemento invece di due
+           che dicono la stessa cosa — e le parole chiave stanno nel sommario
+           qui sotto, che è una frase vera e ha un ruolo editoriale suo.
+           La gerarchia resta corretta: un h1, poi tutti h2. -->
+      <div class="about__text">
+        <svg class="about__decor" viewBox="0 0 400 200" preserveAspectRatio="none" aria-hidden="true">
+        <path d="M10 150 Q 120 20, 250 90 T 390 40" stroke="currentColor" stroke-width="4" fill="none" stroke-linecap="round"></path>
+      </svg>
+        <span class="eyebrow" data-reveal="up">CHI SIAMO</span>
+        <h1 class="heading-lg" id="chi-siamo-title" data-reveal="title">Nati da tre amici,<br>cresciuti a Roma</h1>
+        <p class="about__lead" data-reveal="up">
+          BEVO è un cocktail bar e pub a Roma, in zona Furio Camillo.
+        </p>
+        <p class="body-text" data-reveal="up">
+          BEVO nasce dall'idea di tre soci che hanno voluto creare un posto dove bere bene, mangiare qualcosa di buono e stare in compagnia. Cocktail curati, musica giusta e serate a tema, senza prendersi troppo sul serio.
+        </p>
+      </div>
+
+      <div class="about__media" data-reveal="media">
+        <img class="about__photo" loading="lazy" decoding="async" src="assets/img/chisiamo-photo.webp" alt="Bancone e dettaglio drink del locale BEVO" width="1000" height="1000">
+      </div>
+    </section>
+
+    <section class="menu" id="menu" aria-labelledby="menu-title">
+      <div class="menu__intro">
+        <span class="eyebrow eyebrow--centered" data-reveal="up">IL MENU</span>
+        <h2 class="heading-lg" id="menu-title" data-reveal="title">Quello che beviamo (e mangiamo)</h2>
+        <p class="body-text body-text--muted" data-reveal="up">Un assaggio di quello che trovi da noi. Il resto è tutto nel menu completo.</p>
+      </div>
+
+      <div class="menu__grid">
+        <article class="menu__card" data-reveal="card">
+          <div class="menu__card-media">
+            <img class="menu__card-photo" loading="lazy" decoding="async" src="assets/img/menu-signature.webp" alt="Cocktail d'autore BEVO" width="660" height="413">
+          </div>
+          <div class="menu__card-body">
+            <h3 class="menu__card-title">Signature Drinks</h3>
+            <p class="menu__card-desc">I nostri cocktail d'autore</p>
+          </div>
+        </article>
+
+        <article class="menu__card" data-reveal="card">
+          <div class="menu__card-media">
+            <img class="menu__card-photo" loading="lazy" decoding="async" src="assets/img/menu-classici.webp" alt="Drink classico servito al banco" width="660" height="413">
+          </div>
+          <div class="menu__card-body">
+            <h3 class="menu__card-title">Drinks Classici</h3>
+            <p class="menu__card-desc">I grandi classici, fatti come si deve</p>
+          </div>
+        </article>
+
+        <article class="menu__card" data-reveal="card">
+          <div class="menu__card-media">
+            <img class="menu__card-photo" loading="lazy" decoding="async" src="assets/img/menu-vini.webp" alt="Calice di vino e bottiglia" width="660" height="413">
+          </div>
+          <div class="menu__card-body">
+            <h3 class="menu__card-title">Vini &amp; Birre</h3>
+            <p class="menu__card-desc">Mescita curata e birre ricercate</p>
+          </div>
+        </article>
+      </div>
+
+      <div class="menu__cta" data-reveal="up">
+        <a href="https://www.leggimenu.it/menu/7hqk3faj7pt1" class="btn btn--primary" target="_blank" rel="noopener">Vedi il menu completo<span class="sr-only"> (si apre in una nuova scheda)</span></a>
+        <p class="menu__note">Drinks, taglieri, sfizi, vini e distillati — tutto il menu, sempre aggiornato.</p>
+      </div>
+    </section>
+
+    <section class="aperitivo" id="aperitivo" aria-labelledby="aperitivo-title">
+      <div class="aperitivo__bg">
+        <img class="aperitivo__bg-img" src="assets/img/aperitivo-bg.webp" width="1200" height="514" loading="lazy" decoding="async" alt="" role="presentation">
+        <div class="aperitivo__bg-overlay"></div>
+      </div>
+
+      <div class="aperitivo__content">
+        <span class="eyebrow eyebrow--centered" data-reveal="up">MARTEDÌ – DOMENICA</span>
+
+        <h2 class="heading-xl" id="aperitivo-title" data-reveal="title">L'aperitivo, fatto bene</h2>
+
+        <p class="aperitivo__hours" data-reveal>18:00 — 21:00</p>
+
+        <p class="body-text" data-reveal="up">
+          Taglieri, sfizi e drink della casa, ogni giorno dalle 18 alle 21. Il modo giusto per iniziare la serata da BEVO.
+        </p>
+
+        <!-- Le due pill "Taglieri" e "Sfizi" stavano qui e sono state tolte:
+             ripetevano due parole del paragrafo che le precede di 40px, e pur
+             essendo identiche a vedersi una era un link a #menu e l'altra uno
+             <span> inerte — stessa forma, affordance diverse. Tolto il rumore,
+             il prezzo resta l'unico elemento fra il testo e la CTA, che è
+             esattamente il ruolo che deve avere. -->
+        <p class="aperitivo__price" data-reveal="up"><span class="aperitivo__price-from">Da</span><strong class="aperitivo__price-value">12<span class="aperitivo__price-cur">€</span></strong></p>
+
+        <a href="https://wa.me/393426747449?text=Ciao%20BEVO%21%20Vorrei%20prenotare%20per%20l%27aperitivo%2C%20mi%20dite%20come%20funziona%3F" class="btn btn--primary" data-reveal="up" target="_blank" rel="noopener">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 21l1.65-4.95A8 8 0 1112 20a8 8 0 01-6.4-3.2z"></path></svg>
+          Prenota il tuo tavolo<span class="sr-only"> (si apre in una nuova scheda)</span>
+        </a>
+      </div>
+    </section>
+
+    <section class="nightlife" id="eventi" aria-labelledby="eventi-title">
+      <!-- Il data-reveal sta sul contenitore e non sulle singole foto di
+           proposito: ognuna porta già una `transform: rotate(...)` dal CSS e
+           un :hover che la raddrizza. Se GSAP scrivesse un transform inline su
+           di loro, vincerebbe sulla regola CSS e spegnerebbe sia le rotazioni
+           sia l'hover. Animando il blocco le foto restano intatte. -->
+      <div class="nightlife__photos" data-reveal="media">
+        <img class="nightlife__photo nightlife__photo--1" loading="lazy" decoding="async" src="assets/img/eventi-photo-1.webp" alt="DJ set in atmosfera serale" width="584" height="365">
+        <img class="nightlife__photo nightlife__photo--2" loading="lazy" decoding="async" src="assets/img/eventi-photo-2.webp" alt="Gente che balla al locale" width="584" height="365">
+        <img class="nightlife__photo nightlife__photo--3" loading="lazy" decoding="async" src="assets/img/eventi-photo-3.webp" alt="Atmosfera nightlife del locale" width="584" height="365">
+      </div>
+
+      <div class="nightlife__content">
+        <!-- Filigrana decorativa: fuori dal flusso, non selezionabile e nascosta
+             agli screen reader. Il testo è puro ornamento, l'informazione sta
+             nell'eyebrow e nel titolo. Sta qui dentro perché è al blocco di
+             testo che deve restare agganciata: da mobile, ancorata alla
+             sezione, finirebbe coperta dalle foto impilate. -->
+        <span class="nightlife__watermark" aria-hidden="true">NIGHTLIFE</span>
+
+        <span class="eyebrow eyebrow--centered" data-reveal="up">LA VITA NOTTURNA</span>
+
+        <h2 class="heading-md" id="eventi-title" data-reveal="title">Non solo drink</h2>
+
+        <div class="nightlife__badges" data-reveal="up">
+          <span class="tag tag--badge">DJ set</span>
+          <span class="tag tag--badge">Serate a tema</span>
+          <span class="tag tag--badge">Comedy night</span>
+        </div>
+
+        <p class="body-text body-text--muted" data-reveal="up">
+          Da BEVO la programmazione cambia spesso — il calendario aggiornato è sempre su Instagram.
+        </p>
+
+        <a href="https://www.instagram.com/bevo.roma/" class="btn btn--outline btn--sm" data-reveal="up" target="_blank" rel="noopener">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5"></rect><circle cx="12" cy="12" r="4"></circle><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"></circle></svg>
+          Segui @bevo.roma<span class="sr-only"> (si apre in una nuova scheda)</span>
+        </a>
+      </div>
+    </section>
+
+    <section class="gallery" id="galleria" aria-labelledby="galleria-title">
+      <div class="gallery__intro">
+        <span class="eyebrow eyebrow--centered" data-reveal="up">GALLERIA</span>
+        <h2 class="heading-lg" id="galleria-title" data-reveal="title">Un assaggio delle nostre serate</h2>
+        <p class="body-text body-text--muted" data-reveal="up">Scatti dal locale, tra drink, gente e atmosfera.</p>
+      </div>
+
+      <!-- Erano 8 tile placeholder con scritto "Foto serata", "Foto drink"...
+           Otto riquadri vuoti costano più credibilità di quanta ne diano tre
+           immagini vere, quindi la griglia è stata ridotta a ciò che si può
+           davvero mostrare: tre scatti già in nostro possesso più un pannello
+           Instagram, che è poi dove le foto delle serate stanno per davvero.
+
+           Due foto e non tre, e sono le due che nel resto della pagina non si
+           vedono: hero-bg e aperitivo-bg stanno sotto overlay quasi opachi
+           nelle rispettive sezioni, quindi qui arrivano come immagini nuove.
+           Il terzo scatto era chisiamo-photo, ben visibile poco più su: era
+           l'unica ripetizione vera e si è tolta invece di mascherarla.
+           Quando il cliente manderà le foto vere: aggiungere le tile, cambiare
+           i src e togliere .gallery__grid--placeholder dal contenitore, che
+           disattiva il velo magenta di uniformazione. -->
+      <div class="gallery__grid gallery__grid--placeholder">
+        <figure class="gallery__item gallery__item--wide" data-reveal="tile">
+          <img class="gallery__img" loading="lazy" decoding="async"
+               src="assets/img/hero-bg.webp" width="1200" height="675"
+               alt="Interno di BEVO durante una serata">
+        </figure>
+
+        <figure class="gallery__item gallery__item--wide2" data-reveal="tile">
+          <img class="gallery__img" loading="lazy" decoding="async"
+               src="assets/img/aperitivo-bg.webp" width="1200" height="514"
+               alt="Tagliere e tavolo apparecchiato per l'aperitivo da BEVO">
+        </figure>
+
+        <a class="gallery__item gallery__item--cta" data-reveal="tile"
+           href="https://www.instagram.com/bevo.roma/" target="_blank" rel="noopener">
+          <span class="gallery__cta-handle">@bevo.roma</span>
+          <span class="gallery__cta-title">Le serate,<br>giorno per giorno</span>
+          <span class="gallery__cta-action">
+            Guarda su Instagram
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7"></path><path d="M8 7h9v9"></path></svg>
+            <span class="sr-only"> (si apre in una nuova scheda)</span>
+          </span>
+        </a>
+      </div>
+    </section>
+
+    <section class="location" id="dove-siamo" aria-labelledby="dove-siamo-title">
+      <div class="location__info">
+        <span class="eyebrow" data-reveal="up">DOVE SIAMO</span>
+        <h2 class="heading-lg" id="dove-siamo-title" data-reveal="title">Vieni a trovarci</h2>
+        <address class="location__address" data-reveal="up">Via Giovanni Villani, 48 — Furio Camillo, Roma</address>
+
+        <div class="location__hours" data-reveal="up">
+          <div class="location__hours-row">
+            <span>Lunedì</span><span>Chiuso</span>
+          </div>
+          <div class="location__hours-row">
+            <span>Martedì – Domenica</span><span>18:00 / 02:00</span>
+          </div>
+        </div>
+
+        <div class="location__links" data-reveal="up">
+          <a href="https://www.instagram.com/bevo.roma/" class="location__link" target="_blank" rel="noopener">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5"></rect><circle cx="12" cy="12" r="4"></circle><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"></circle></svg>
+            @bevo.roma<span class="sr-only"> (si apre in una nuova scheda)</span>
+          </a>
+          <a href="tel:+393426747449" class="location__link">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13.832 16.568a1 1 0 0 0 1.213-.303l.355-.465A2 2 0 0 1 17 15h3a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2A18 18 0 0 1 2 4a2 2 0 0 1 2-2h3a2 2 0 0 1 2 2v3a2 2 0 0 1-.8 1.6l-.468.351a1 1 0 0 0-.292 1.233 14 14 0 0 0 6.392 6.384"></path></svg>
+            342 6747449
+          </a>
+          <a href="https://wa.me/393426747449?text=Ciao%20BEVO%21%20Vorrei%20qualche%20informazione%20sul%20locale." class="location__link" target="_blank" rel="noopener">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 21l1.65-4.95A8 8 0 1112 20a8 8 0 01-6.4-3.2z"></path></svg>
+            WhatsApp<span class="sr-only"> (si apre in una nuova scheda)</span>
+          </a>
+        </div>
+
+        <a href="https://wa.me/393426747449?text=Ciao%20BEVO%21%20Vorrei%20prenotare%20un%20tavolo%2C%20mi%20dite%20le%20disponibilit%C3%A0%3F" class="btn btn--primary location__cta" target="_blank" rel="noopener">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 21l1.65-4.95A8 8 0 1112 20a8 8 0 01-6.4-3.2z"></path></svg>
+        Prenota il tuo tavolo<span class="sr-only"> (si apre in una nuova scheda)</span>
+      </a>
+      </div>
+
+      <div class="location__map-col" data-reveal="media">
+        <!-- Facciata click-to-load: senza il click non parte nessuna richiesta
+             verso Google, quindi nessun cookie di terze parti e nessun banner. -->
+        <div class="location__map" id="location-map">
+          <div class="location__map-facade" id="location-map-facade">
+            <p class="location__map-address">
+              <strong>BEVO</strong><br>
+              Via Giovanni Villani, 48<br>
+              00179 Roma — Furio Camillo
+            </p>
+            <button type="button" class="btn btn--outline btn--sm map__load" id="map-load">Carica la mappa</button>
+            <p class="location__map-note">Caricando la mappa accetti i cookie di Google Maps.</p>
+          </div>
+        </div>
+
+        <p class="location__map-links">
+          <a href="https://share.google/FAhQCaxC06VNPIQZo" class="tag tag--link" target="_blank" rel="noopener">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 10c0 6-9 12-9 12s-9-6-9-12a9 9 0 1118 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+            Apri in Google Maps<span class="sr-only"> (si apre in una nuova scheda)</span>
+          </a>
+          <a href="https://www.google.com/maps/dir/?api=1&amp;destination=41.8693142%2C12.5171454" class="tag tag--link" target="_blank" rel="noopener">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><polygon points="3 11 22 2 13 21 11 13 3 11"></polygon></svg>
+            Indicazioni stradali<span class="sr-only"> (si apre in una nuova scheda)</span>
+          </a>
+        </p>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="site-footer">
+    <div class="site-footer__inner">
+      <div class="site-footer__top">
+        <div class="site-footer__brand" data-reveal="up">
+          <a href="#top" class="site-footer__logo-link" aria-label="BEVO — torna in cima">
+            <img src="assets/img/bevo-logo-200.webp" alt="BEVO" width="200" height="64" loading="lazy" decoding="async" class="site-footer__logo">
+          </a>
+          <p class="site-footer__tagline">Cocktail bar e pub a Furio Camillo, Roma.</p>
+          <div class="site-footer__social">
+            <a href="https://www.instagram.com/bevo.roma/" class="site-footer__icon-link" target="_blank" rel="noopener" aria-label="Instagram di BEVO (si apre in una nuova scheda)">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5"></rect><circle cx="12" cy="12" r="4"></circle><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"></circle></svg>
+            </a>
+            <a href="https://share.google/Y7uX9VbksgOokOIGe" class="site-footer__icon-link" target="_blank" rel="noopener" aria-label="Scheda Google di BEVO (si apre in una nuova scheda)">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 10c0 6-9 12-9 12s-9-6-9-12a9 9 0 1118 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+            </a>
+          </div>
+        </div>
+
+        <nav class="site-footer__col" aria-label="Sezioni del sito" data-reveal="up">
+          <p class="site-footer__col-title">Esplora</p>
+          <a href="#chi-siamo" class="site-footer__link">Chi siamo</a>
+          <a href="#menu" class="site-footer__link">Menu</a>
+          <a href="#aperitivo" class="site-footer__link">Aperitivo</a>
+          <a href="#eventi" class="site-footer__link">Eventi</a>
+          <a href="#galleria" class="site-footer__link">Galleria</a>
+          <a href="#dove-siamo" class="site-footer__link">Dove siamo</a>
+        </nav>
+
+        <div class="site-footer__col" data-reveal="up">
+          <p class="site-footer__col-title">Contatti</p>
+          <address class="site-footer__address">
+            <a href="https://www.google.com/maps/dir/?api=1&amp;destination=41.8693142%2C12.5171454" class="site-footer__link" target="_blank" rel="noopener">Via Giovanni Villani 48, Roma<span class="sr-only"> (si apre in una nuova scheda)</span></a>
+          </address>
+          <a href="tel:+393426747449" class="site-footer__link">342 6747449</a>
+          <a href="https://wa.me/393426747449?text=Ciao%20BEVO%21%20Vorrei%20qualche%20informazione%20sul%20locale." class="site-footer__link" target="_blank" rel="noopener">WhatsApp<span class="sr-only"> (si apre in una nuova scheda)</span></a>
+        </div>
+      </div>
+
+      <div class="site-footer__divider" role="presentation"></div>
+
+      <div class="site-footer__bottom" data-reveal="up">
+        <div class="site-footer__legal-block">
+          <p class="site-footer__copy">© <span id="current-year"></span> BEVO. Tutti i diritti riservati.</p>
+          <p class="site-footer__legal">BEVO di BEVO SRLS · P.IVA 18301891000 · REA RM-1775753 · Capitale sociale € 3.000,00<br>Sede: Via Giovanni Villani 48, 00179 Roma</p>
+        </div>
+
+        <nav class="site-footer__legal-links" aria-label="Informazioni legali">
+          <a href="/privacy.html" class="tag tag--link">Privacy</a>
+          <a href="/cookie.html" class="tag tag--link">Cookie</a>
+        </nav>
+      </div>
+    </div>
+  </footer>
+
+  <button type="button" class="back-to-top" id="back-to-top" aria-label="Torna in cima alla pagina">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 19V5"></path><path d="m5 12 7-7 7 7"></path></svg>
+  </button>
+  <nav class="quick-bar" id="quick-bar" aria-label="Azioni rapide">
+    <a class="quick-bar__item" href="https://www.leggimenu.it/menu/7hqk3faj7pt1" target="_blank" rel="noopener">Menu<span class="sr-only"> (si apre in una nuova scheda)</span></a>
+    <a class="quick-bar__item quick-bar__item--primary" href="https://wa.me/393426747449?text=Ciao%20BEVO%21%20Vorrei%20prenotare%20un%20tavolo%20per%20stasera." target="_blank" rel="noopener">Prenota<span class="sr-only"> (si apre in una nuova scheda)</span></a>
+    <a class="quick-bar__item" href="#dove-siamo">Dove siamo</a>
+  </nav>
+
+  <script src="js/script.js"></script>
+
+  <!-- GSAP ospitato in locale, non da CDN. Il resto della pagina è costruito
+       per non contattare terze parti prima del consenso (vedi la facciata
+       click-to-load della mappa): tirare la libreria da un CDN aprirebbe una
+       connessione esterna a ogni visita, esattamente ciò che si è evitato
+       altrove. In più toglie di mezzo un single point of failure.
+
+       `defer` su tutti e tre, e l'ordine conta: ScrollTrigger si registra su
+       gsap, motion.js li usa entrambi. Gli script deferiti mantengono l'ordine
+       del documento, quindi la sequenza è garantita. Se uno dei due file non
+       arriva, motion.js se ne accorge e riporta la pagina allo stato statico
+       invece di lasciare il contenuto invisibile. -->
+  <script defer src="js/gsap.min.js"></script>
+  <script defer src="js/ScrollTrigger.min.js"></script>
+  <!-- Lenis prima di motion.js, che lo istanzia. Stessa scelta di GSAP e per
+       le stesse ragioni: ospitato in locale invece che da CDN, licenza MIT
+       che lo consente. Se il file non arriva, motion.js se ne accorge e la
+       pagina resta con lo scroll nativo — tutto il resto continua a girare. -->
+  <script defer src="js/lenis.min.js"></script>
+  <script defer src="js/motion.js"></script>
+</body>
+</html>

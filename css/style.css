@@ -1,0 +1,2986 @@
+/* ==========================================================================
+   BEVO — Cocktail Bar · neon-urban theme
+   ========================================================================== */
+
+/* ==========================================================================
+   Font — ospitati in locale
+   ==========================================================================
+
+   Stavano su fonts.googleapis.com e fonts.gstatic.com: tre richieste a Google
+   a ogni visita, prima di qualunque interazione e quindi prima di qualunque
+   consenso possibile. Non piazzano cookie, quindi non è una questione da
+   banner — è che trasmettono l'IP dell'utente a un terzo, ed è il punto su cui
+   si è pronunciato il Tribunale di Monaco (LG München I, 3 O 17493/20).
+   Ospitarli qui chiude la questione alla radice invece di doverla dichiarare,
+   ed è la stessa scelta già presa per GSAP e per la stessa ragione. Entrambi i
+   font sono sotto SIL Open Font License, che consente l'hosting proprio.
+
+   Sottoinsiemi: solo `latin` e `latin-ext`. Il CSS di Google ne serviva anche
+   in cirillico, greco e vietnamita — sei file che su un sito in italiano non
+   verranno mai richiesti.
+
+   Inter è un font variabile: verificato leggendo la table directory del woff2,
+   che contiene fvar, gvar e avar. Un file solo copre quindi tutto l'intervallo
+   100-900, e le quattro dichiarazioni di peso separate che serviva Google
+   diventano una. Anton invece non lo è — nessuna fvar — e resta dichiarato al
+   solo peso 400: dargli un intervallo farebbe sintetizzare al browser dei
+   falsi grassetti al posto di rifiutare il peso.
+   ========================================================================== */
+
+@font-face {
+  font-family: 'Anton';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('../assets/fonts/anton-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: 'Anton';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('../assets/fonts/anton-latin-ext.woff2') format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url('../assets/fonts/inter-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url('../assets/fonts/inter-latin-ext.woff2') format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+
+:root {
+  --color-black: #000000;
+  --color-magenta: #DE00F1;
+  --color-white: #FFFFFF;
+  --color-magenta-rgb: 222, 0, 241;
+
+  --font-display: 'Anton', sans-serif;
+  --font-body: 'Inter', sans-serif;
+
+  /* --- Spazio: scala unica, base 4px -------------------------------------
+     Prima le distanze erano ~75 valori in px scelti caso per caso: due blocchi
+     con lo stesso ruolo finivano a 18 e a 20px senza che la differenza
+     volesse dire niente. Con una scala sola il ritmo diventa prevedibile e
+     ogni scarto resta una scelta invece di un residuo. */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-7: 28px;
+  --space-8: 32px;
+  --space-10: 40px;
+  --space-12: 48px;
+  --space-16: 64px;
+
+  /* --- Raggi -------------------------------------------------------------
+     Erano 3, 14 e 18px sparsi per il foglio, più la pillola. Quattro gradi con
+     un ruolo dichiarato: `sm` per i dettagli di carta, `md` per le tile,
+     `lg` per le superfici grandi, `pill` per i controlli. */
+  --radius-sm: 4px;
+  --radius-md: 14px;
+  --radius-lg: 20px;
+  --radius-pill: 999px;
+
+  /* --- Scala tipografica -------------------------------------------------
+     La scala vecchia saliva 44 → 52 → 64: rapporti di 1.18 e 1.23, troppo
+     vicini perché l'occhio leggesse tre livelli distinti — sembravano tre
+     misure dello stesso titolo. Qui i salti sono ~1.5, così la gerarchia si
+     vede prima di leggere. Il livello `md` scende invece di salire: è ciò che
+     apre lo spazio sotto `lg` e rende netto il gradino. */
+  --text-xs: 12px;
+  --text-sm: 13px;
+  --text-base: 14px;
+  --text-md: 15px;
+  --text-lg: 17px;
+  --text-xl: clamp(17px, 1.6vw, 19px);
+
+  /* Superfici elevate. Il fondo pagina resta #000 e non si tocca: il magenta
+     dell'eyebrow sta a 5.38:1 sul nero puro e a 4.86:1 già su #101014, cioè
+     sotto il budget documentato più avanti (watermark + griglia se lo mangiano).
+     Queste tinte servono solo alle card, dove non c'è testo magenta piccolo. */
+  --surface-1: #0A0A0C;
+  --surface-2: #101014;
+  --surface-3: #16161B;
+
+  --hairline: rgba(255, 255, 255, 0.09);
+  --hairline-strong: rgba(255, 255, 255, 0.16);
+
+  /* --- Glow, a livelli --- ------------------------------------------------
+     Regola: il glow è una risorsa scarsa. Prima ce l'aveva ogni bordo, tag e
+     card, e con tutto che brillava non brillava niente. Ora è gerarchico:
+     `hero` solo al logo, `cta` solo all'azione primaria, `soft` per accenni.
+     Chi non è in questa lista non ha glow, ha un bordo. */
+  --glow-hero: 0 0 30px rgba(var(--color-magenta-rgb), 0.55), 0 0 90px rgba(var(--color-magenta-rgb), 0.28);
+  --glow-cta: 0 0 22px rgba(var(--color-magenta-rgb), 0.45), 0 0 60px rgba(var(--color-magenta-rgb), 0.2);
+  --glow-cta-hover: 0 0 30px rgba(var(--color-magenta-rgb), 0.7), 0 0 80px rgba(var(--color-magenta-rgb), 0.35);
+  --glow-soft: 0 0 14px rgba(var(--color-magenta-rgb), 0.28);
+
+  /* Alone sul testo. Non è un alias dei quattro livelli qui sopra: quelli
+     illuminano superfici, questo illumina glifi e va tarato più basso, o a
+     13px sgrana i bordi delle lettere invece di accenderle.
+     I quattro alias `--shadow-magenta-*` che stavano qui sono stati tolti:
+     erano nomi doppi per gli stessi valori e, dei cinque, quattro non li
+     usava nessuna regola. */
+  --glow-text: 0 0 12px rgba(var(--color-magenta-rgb), 0.45);
+
+  /* Ombre di profondità: su fondo nero il nero non stacca, quindi la
+     profondità la fanno le ombre ampie e morbide più il bordo chiaro sopra. */
+  --shadow-depth-sm: 0 2px 8px rgba(0, 0, 0, 0.6);
+  --shadow-depth-md: 0 18px 40px -18px rgba(0, 0, 0, 0.9);
+  --shadow-depth-lg: 0 40px 80px -32px rgba(0, 0, 0, 0.95);
+
+  --transition-fast: 0.2s;
+  --transition-med: 0.25s;
+
+  /* Curve. La `premium` è un ease-out lungo e asimmetrico: parte decisa e si
+     posa piano, che è ciò che fa leggere un movimento come "costoso". */
+  --ease-premium: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-out-soft: cubic-bezier(0.33, 1, 0.68, 1);
+
+  /* Semaforo stato apertura (Hero): eccezione intenzionale alla palette
+     brand magenta/nero/bianco, usata solo per il pallino di stato. */
+  --color-status-open-rgb: 34, 197, 94;
+  --color-status-soon-rgb: 234, 179, 8;
+  --color-status-closed-rgb: 239, 68, 68;
+
+  --container-max: 1200px;
+  /* Misura stretta per i blocchi di testo centrati: a 1200px di contenitore
+     una riga di corpo arriverebbe a ~140 caratteri, il doppio dei 65-75 in cui
+     l'occhio ritrova l'inizio della riga successiva senza perdersi. */
+  --container-narrow: 760px;
+  --section-px: var(--space-8);
+
+  /* Ritmo verticale: un valore solo, usato da tutte le sezioni sopra e sotto.
+     124 + 124 fa 248px fra una sezione e l'altra, circa un quarto di schermo.
+
+     Prima erano tre (`sm`/`md`/`lg`), e la scala a tre passi era sbagliata due
+     volte. Nel merito: la differenza fra "stessa sezione" e "sezione nuova"
+     qui non serve, perché ogni sezione ha già un occhiello e un titolo che la
+     aprono — il ritmo differenziato risolveva un problema che il contenuto
+     risolveva da sé, e in cambio faceva sentire il salto come un'incoerenza.
+     Nei fatti: `sm` non lo leggeva nessuna regola, e `lg` compariva solo su
+     due padding-bottom, quindi dei tre passi ne erano vivi due — uno dei quali
+     senza una ragione dichiarata da nessuna parte.
+
+     Sulla taglia: erano 96/140/190, li avevo portati a 112/168/232 partendo
+     dal principio che lo spazio è il materiale più economico di una pagina
+     scura e quello che più la fa leggere come costosa. Vero fino a una certa
+     soglia, che era stata superata: 336px di vuoto fra le sezioni, oltre un
+     terzo di schermo, su una landing il cui unico lavoro è far prenotare un
+     tavolo. Sopra quella soglia il vuoto non si legge come respiro, si legge
+     come riempitivo, e allunga la strada verso la CTA.
+
+     Tolti da qui `--section-py` e `--nav-height`: nessuna regola del foglio
+     li leggeva, e il primo veniva perfino ridefinito in due media query. */
+  --space-section: clamp(80px, 9.5vw, 124px);
+}
+
+/* ==========================================================================
+   Reset & base
+   ========================================================================== */
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--color-black);
+  color: var(--color-white);
+  font-family: var(--font-body);
+  overflow-x: hidden;
+}
+
+img { max-width: 100%; display: block; }
+
+address { font-style: normal; }
+
+/* Anello bianco + alone magenta: il bianco garantisce ≥3:1 sia sul magenta
+   pieno dei .btn--primary (3.9:1) sia sullo sfondo near-black (~19:1),
+   quindi il focus resta visibile su qualsiasi superficie del sito. */
+:focus-visible {
+  outline: 3px solid var(--color-white);
+  outline-offset: 2px;
+  box-shadow: 0 0 0 6px rgba(var(--color-magenta-rgb), 0.9);
+  border-radius: 4px;
+}
+
+/* Testo per i soli lettori di schermo. Non usarlo per contenuti SEO: qui serve
+   solo ad annunciare comportamenti non visibili, come l'apertura in una
+   nuova scheda. */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Skip link: primo stop di tabulazione, visibile solo quando riceve il focus. */
+.skip-link {
+  position: absolute;
+  left: -9999px;
+  top: 0;
+  z-index: 9999;
+  /* Colori dichiarati già qui: col solo :focus l'elemento erediterebbe il blu
+     di default del browser, che su fondo scuro sta a 2.2:1. */
+  background: var(--color-white);
+  color: #0B0B0F;
+  font-weight: 700;
+  border-radius: 6px;
+  text-decoration: none;
+}
+
+.skip-link:focus {
+  left: 8px;
+  top: 8px;
+  padding: 12px 16px;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+/* --- Lenis (scroll con inerzia) ------------------------------------------
+   Le regole che la libreria richiede per funzionare.
+
+   La seconda è quella che conta, ed è più sottile di quanto sembri:
+   `scroll-behavior: smooth` qui sopra e Lenis fanno la stessa cosa in due
+   modi diversi, e insieme litigherebbero — il browser interpolerebbe la
+   posizione mentre Lenis la sta già interpolando per conto suo. Ma la classe
+   `lenis-smooth` la libreria la mette solo *durante* uno scroll suo e la
+   toglie appena finisce (verificato: a riposo il documento ha la sola
+   `.lenis`). Il `!important` vale quindi esattamente nella finestra in cui
+   servirebbe il conflitto, e fuori da lì lo smooth nativo resta disponibile
+   per chi non passa da Lenis.
+
+   Tutte e tre dipendono dalla classe `.lenis`, che è la libreria a mettere
+   all'avvio. Se non parte — JS spento, GSAP non caricato,
+   `prefers-reduced-motion` attivo — nessuna di queste vale e lo scroll resta
+   quello nativo con lo smooth del browser, cioè il comportamento di prima. */
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+
+.lenis.lenis-stopped {
+  overflow: hidden;
+}
+
+/* Vale per tutte le sezioni con id, non solo le 3 esposte dalla nav:
+   l'ancora non deve mai finire sotto la sticky nav. */
+section[id],
+header[id] {
+  scroll-margin-top: 84px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+
+  /* Le uniche due animazioni infinite del sito. I selettori sono quelli reali
+     che portano le animazioni: `neon-flicker` sta su .hero__logo-wrap e
+     `scroll-bounce` su .hero__scroll-indicator. Fuori da questo media query
+     l'aspetto di default resta invariato. */
+  .hero__logo-wrap,
+  .hero__claim,
+  [class*="neon"] {
+    animation: none !important;
+    opacity: 1 !important;
+  }
+
+  .hero__scroll-indicator,
+  [class*="scroll-hint"],
+  [class*="scroll-down"] {
+    animation: none !important;
+  }
+}
+
+/* ==========================================================================
+   Strato atmosferico
+   ========================================================================== */
+
+/* Due layer `fixed` dietro a tutta la pagina: restano fermi mentre il
+   contenuto scorre, così il nero non sembra piatto senza diventare un
+   secondo sfondo che compete col contenuto. Nessun colore nuovo, solo
+   magenta di brand ad alfa bassissima.
+   Le sezioni non hanno sfondi propri (tranne hero e aperitivo, che hanno la
+   loro foto): sono trasparenti, quindi lo strato si vede attraverso tutte.
+   Lo sfondo nero del body si propaga al canvas, quindi gli z-index negativi
+   restano comunque sopra al nero e sotto a tutto il contenuto. */
+
+/* Aloni: tre e non quattro, di raggio diverso. Quattro angoli uguali
+   leggerebbero come una cornice, tre sbilanciati come luce d'ambiente. */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 10;
+  pointer-events: none;
+  background:
+    radial-gradient(58% 52% at 0% 0%, rgba(var(--color-magenta-rgb), 0.10) 0%, transparent 68%),
+    radial-gradient(44% 38% at 100% 8%, rgba(var(--color-magenta-rgb), 0.07) 0%, transparent 66%),
+    radial-gradient(62% 50% at 100% 100%, rgba(var(--color-magenta-rgb), 0.09) 0%, transparent 70%);
+}
+
+/* Griglia: righe da 1px ogni 72px. L'alfa è tarata al ribasso perché al
+   centro dello schermo ci passa sopra anche la filigrana della sezione
+   eventi, e le due sommate non devono far scendere l'eyebrow magenta sotto
+   4.5:1 — vedi il commento su .nightlife__watermark. */
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 10;
+  pointer-events: none;
+  background-image:
+    repeating-linear-gradient(to right, rgba(var(--color-magenta-rgb), 0.045) 0 1px, transparent 1px 72px),
+    repeating-linear-gradient(to bottom, rgba(var(--color-magenta-rgb), 0.045) 0 1px, transparent 1px 72px);
+  /* Sfumata verso i bordi: tagliata di netto contro i lati dello schermo la
+     griglia leggerebbe come un elemento di interfaccia, non come atmosfera.
+     La maschera la spegne proprio dove gli aloni sono più forti, quindi le
+     due alfa non si sommano mai al massimo. */
+  -webkit-mask-image: radial-gradient(ellipse 72% 62% at 50% 45%, #000 25%, transparent 80%);
+  mask-image: radial-gradient(ellipse 72% 62% at 50% 45%, #000 25%, transparent 80%);
+}
+
+/* --- Grana ---------------------------------------------------------------
+   Su un fondo nero pieno le grandi campiture leggono "digitali": piatte e un
+   po' povere. Una grana finissima sopra tutto rompe la pastosità e dà l'aria
+   di stampa/pellicola che è metà dell'effetto premium sui temi scuri.
+
+   È un elemento vero e non uno pseudo di body perché body::before e ::after
+   sono già occupati dagli aloni e dalla griglia, e perché così può stare
+   *sopra* le foto di hero e aperitivo (z-index 100), che è dove la grana
+   serve davvero. Resta sotto la nav (200), l'overlay (300) e la quick bar
+   (900): non deve mai velare l'interfaccia.
+
+   Il rumore è feTurbulence in un data URI: nessuna richiesta di rete, nessun
+   file immagine da gestire. */
+.grain {
+  position: fixed;
+  inset: -50%;
+  z-index: 100;
+  pointer-events: none;
+  opacity: 0.055;
+  background-image: url("../assets/svg/grain.svg");
+  will-change: transform;
+}
+
+/* Lo scatto della grana è ciò che la fa leggere come pellicola invece che come
+   texture ferma. Passi discreti, non un movimento continuo: il continuo
+   sembrerebbe uno sfondo che scorre. */
+@keyframes grain-shift {
+  0%, 100% { transform: translate(0, 0); }
+  10% { transform: translate(-4%, -2%); }
+  20% { transform: translate(-8%, 4%); }
+  30% { transform: translate(4%, -6%); }
+  40% { transform: translate(-2%, 8%); }
+  50% { transform: translate(-8%, 2%); }
+  60% { transform: translate(6%, 0); }
+  70% { transform: translate(0, 6%); }
+  80% { transform: translate(2%, -4%); }
+  90% { transform: translate(-4%, 2%); }
+}
+
+.grain { animation: grain-shift 8s steps(1) infinite; }
+
+@media (prefers-reduced-motion: reduce) {
+  .grain { animation: none; }
+}
+
+/* ==========================================================================
+   Reveal on scroll — stato di partenza
+   ========================================================================== */
+
+/* L'opacità iniziale la mette il CSS, non GSAP: se aspettassi il JS ci
+   sarebbe un lampo di contenuto già visibile prima che venga nascosto.
+   La classe `.js-motion` la scrive uno script inline nel <head>, quindi
+   senza JS (o con JS fallito, o con la libreria non caricata) questa regola
+   non si applica mai e la pagina resta interamente leggibile. */
+.js-motion [data-reveal] {
+  opacity: 0;
+  will-change: transform, opacity;
+}
+
+/* Reduced motion: nessuno stato di partenza nascosto. Il contenuto c'è e
+   basta, e lo script salta del tutto la costruzione delle timeline. */
+@media (prefers-reduced-motion: reduce) {
+  .js-motion [data-reveal] {
+    opacity: 1 !important;
+    transform: none !important;
+    will-change: auto;
+  }
+}
+
+/* ==========================================================================
+   Shared building blocks
+   ========================================================================== */
+
+/* Eyebrow: prima era solo testo magenta con un alone. Il filetto davanti gli
+   dà un aggancio editoriale e permette di calare il glow del testo, che a
+   14px sgranava i bordi delle lettere invece di illuminarle. */
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-3);
+  font-family: var(--font-display);
+  font-size: var(--text-sm);
+  letter-spacing: 3.5px;
+  color: var(--color-magenta);
+  text-shadow: var(--glow-text);
+}
+
+/* Nelle sezioni centrate il filetto da un lato solo sbilancia il blocco, e ne
+   serve un secondo a destra.
+
+   Prima la variante era agganciata a quattro selettori di contesto
+   (`.menu__intro .eyebrow::after`, `.gallery__intro …`, e così via): il
+   componente non sapeva di avere due forme, lo sapevano le sezioni. Aggiungere
+   una sezione centrata voleva dire ricordarsi di allungare quell'elenco, e
+   dimenticarsene produceva un occhiello storto senza errori da nessuna parte.
+   Ora è un modificatore dichiarato nel markup, ed è il componente a portarsi
+   dietro le sue varianti.
+
+   I due filetti sono lo stesso oggetto, quindi una regola sola per entrambi. */
+.eyebrow::before,
+.eyebrow--centered::after {
+  content: "";
+  width: 28px;
+  height: 1px;
+  background: currentColor;
+  box-shadow: var(--glow-soft);
+  flex-shrink: 0;
+}
+
+
+/* Anton è già stretto di suo: alle taglie grandi la spaziatura di default
+   apre troppo e il titolo si sfilaccia. Il tracking negativo lo ricompatta in
+   un blocco unico — è il singolo intervento che più fa sembrare "disegnata"
+   una titolazione. Cresce insieme al corpo, perché il difetto cresce col corpo:
+   -0.014em a 36px, -0.028em a 84px.
+
+   Le cinque dichiarazioni comuni stavano ripetute in tutte e tre le classi, e
+   toccare la titolazione voleva dire modificare tre punti sperando di non
+   dimenticarne uno. Ora la base è una sola e i tre livelli dichiarano solo ciò
+   che li distingue davvero: corpo, interlinea, tracking. */
+.heading-xl,
+.heading-lg,
+.heading-md {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: 400;
+  color: var(--color-white);
+  /* Distribuisce le parole sulle righe invece di riempire la prima e lasciare
+     una vedova sull'ultima. Su titoli brevi in display è la differenza fra un
+     blocco composto e uno andato a capo per caso. Dove non è supportato non
+     succede nulla. */
+  text-wrap: balance;
+}
+
+/* La scala saliva 44 → 52 → 64: rapporti di 1.18 e 1.23. Tre livelli così
+   vicini non si leggono come tre livelli, si leggono come lo stesso titolo
+   stampato in tre misure — ed era questa la gerarchia debole della pagina.
+   Ora i salti sono ~1.5, e `md` scende invece di salire: è il gradino che
+   scende ad aprire lo spazio, non quello che sale a occuparlo. */
+.heading-xl {
+  font-size: clamp(40px, 7vw, 84px);
+  line-height: 0.94;
+  letter-spacing: -0.028em;
+}
+
+.heading-lg {
+  font-size: clamp(32px, 4.6vw, 56px);
+  line-height: 1;
+  letter-spacing: -0.02em;
+}
+
+.heading-md {
+  font-size: clamp(25px, 2.9vw, 36px);
+  line-height: 1.06;
+  letter-spacing: -0.014em;
+}
+
+/* Le parole del titolo entrano da sotto una maschera: serve che ogni riga
+   possa tagliare quel che le sta sotto, quindi overflow nascosto per riga e
+   il movimento sul figlio. Lo split lo fa lo script, questo è il vestito. */
+.split-line {
+  display: block;
+  overflow: hidden;
+  padding-bottom: 0.08em;
+  margin-bottom: -0.08em;
+}
+
+.split-word {
+  display: inline-block;
+  white-space: pre;
+}
+
+.body-text {
+  margin: 0;
+  font-size: var(--text-lg);
+  line-height: 1.7;
+  /* Misura. Oltre i ~70 caratteri l'occhio fatica a riagganciare l'inizio
+     della riga dopo il ritorno a capo, e sui contenitori larghi di questa
+     pagina il corpo ci arrivava. Sta sulla classe e non sezione per sezione:
+     era già dovuto rimediare a mano in `.nightlife` e `.aperitivo`, che
+     infatti dichiarano un max-width proprio. */
+  max-width: 68ch;
+  color: var(--color-white);
+  opacity: 0.85;
+  font-weight: 400;
+}
+
+.body-text--muted {
+  font-size: var(--text-md);
+  line-height: 1.65;
+  opacity: 0.72;
+}
+
+.btn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  padding: var(--space-5) var(--space-10);
+  border-radius: var(--radius-pill);
+  font-family: var(--font-display);
+  font-size: 19px;
+  letter-spacing: 0.6px;
+  text-decoration: none;
+  /* Serve davvero: quasi tutti i .btn sono <a> e il puntatore ce l'hanno di
+     loro, ma "Carica la mappa" è un <button>, e i button nascono con il
+     cursore a freccia. Era l'unico controllo della pagina a non dichiararsi
+     cliccabile. */
+  cursor: pointer;
+  transition: box-shadow 0.4s var(--ease-premium),
+              transform 0.4s var(--ease-premium),
+              background-color 0.3s var(--ease-out-soft);
+}
+
+.btn--primary {
+  background: var(--color-magenta);
+  color: var(--color-black);
+  box-shadow: var(--glow-cta);
+}
+
+/* Lucentezza: una banda chiara che attraversa il bottone al passaggio del
+   mouse. È l'affordance più riconoscibile del "premium" su un pieno saturo e
+   costa una sola transizione di transform.
+
+   Esclude .btn--xs, e non è un dettaglio: su quelle il ::before è già preso
+   dall'area cliccabile 44×44 (vedi la sezione Touch target in fondo). Due
+   regole sullo stesso pseudo-elemento si sovrascriverebbero a vicenda, e
+   l'`overflow: hidden` che serve a contenere la banda ritaglierebbe proprio
+   la parte di target che sporge oltre il bottone. Per questo overflow e
+   isolation stanno qui e non su .btn. */
+.btn--primary:not(.btn--xs) {
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.btn--primary:not(.btn--xs)::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 45%;
+  height: 100%;
+  /* Negativo, non 0: dentro un contesto isolato lo z-index negativo dipinge
+     sopra lo sfondo dell'elemento ma sotto il testo. Con 0 la banda passerebbe
+     davanti alla scritta, sbiancandola a metà corsa. */
+  z-index: -1;
+  background: linear-gradient(100deg, transparent 0%, rgba(255, 255, 255, 0.38) 50%, transparent 100%);
+  transform: translateX(-180%) skewX(-18deg);
+  transition: transform 0.7s var(--ease-premium);
+  pointer-events: none;
+}
+
+@media (hover: hover) {
+  .btn--primary:not(.btn--xs):hover::before { transform: translateX(340%) skewX(-18deg); }
+}
+
+.btn--primary:hover {
+  box-shadow: var(--glow-cta-hover);
+  transform: translateY(-3px);
+}
+
+.btn--primary:active { transform: translateY(-1px); }
+
+/* Il bordo cala da 2px a 1px e perde il glow: a 2px con alone leggeva come un
+   secondo bottone primario e rubava gerarchia alla CTA vera. Il riempimento
+   appena magenta al passaggio dà la risposta che prima dava l'alone. */
+.btn--outline {
+  background: rgba(var(--color-magenta-rgb), 0.04);
+  border: 1px solid rgba(var(--color-magenta-rgb), 0.55);
+  color: var(--color-white);
+}
+
+.btn--outline:hover {
+  background: rgba(var(--color-magenta-rgb), 0.14);
+  border-color: var(--color-magenta);
+  box-shadow: var(--glow-soft);
+  transform: translateY(-3px);
+}
+
+.btn--outline:active { transform: translateY(-1px); }
+
+@media (prefers-reduced-motion: reduce) {
+  .btn { transition: background-color 0.2s linear; }
+  /* `transform: none` e non `display: none`: la banda deve restare fuori campo
+     ma il pseudo-elemento va lasciato in piedi, perché su .btn--xs è l'area
+     cliccabile. Qui il selettore la esclude già, ma la regola resta innocua
+     per costruzione invece che per coincidenza. */
+  .btn--primary:not(.btn--xs)::before { transition: none; opacity: 0; }
+  .btn--primary:hover,
+  .btn--outline:hover { transform: none; }
+}
+
+.btn--sm {
+  padding: var(--space-4) var(--space-8);
+  font-size: 16px;
+  letter-spacing: 0.5px;
+}
+
+.btn--xs {
+  padding: var(--space-3) var(--space-6);
+  font-size: var(--text-base);
+  letter-spacing: 0.4px;
+}
+
+/* Niente più alone e niente più bordo magenta pieno. I tag sono elementi di
+   supporto: con l'alone competevano con le CTA, che sono la cosa che deve
+   vincere in ogni sezione. Restano riconoscibili grazie al fondo appena
+   sollevato e al bordo magenta smorzato. */
+.tag {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-5);
+  border-radius: var(--radius-pill);
+  border: 1px solid rgba(var(--color-magenta-rgb), 0.35);
+  background: rgba(var(--color-magenta-rgb), 0.05);
+  color: var(--color-white);
+  font-size: var(--text-base);
+  font-weight: 600;
+  text-decoration: none;
+  transition: border-color var(--transition-fast), background-color var(--transition-fast);
+}
+
+/* Solo i tag che sono davvero link hanno affordance e stato :hover.
+   Lo <span> decorativo resta senza sottolineatura e senza cursor:pointer. */
+.tag--link {
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.tag--link:hover {
+  border-color: var(--color-magenta);
+  background: rgba(var(--color-magenta-rgb), 0.14);
+}
+
+/* Variante senza icona: solo etichetta, maiuscolo e più marcata. Il
+   maiuscolo è tipografico, nel markup il testo resta in caso normale così
+   gli screen reader non lo compitano lettera per lettera. */
+.tag--badge {
+  text-transform: uppercase;
+  font-weight: 700;
+  letter-spacing: 1px;
+}
+
+/* --- Icone ---------------------------------------------------------------
+   Il magenta di brand era scritto a mano dentro l'HTML, in una ventina fra
+   attributi `stroke` e `fill` sparsi per nav, hero, tag, eventi, contatti e
+   footer. Il token esisteva da sempre in CSS, ma il markup non lo vedeva:
+   cambiare il colore del brand avrebbe ridipinto tutta la pagina lasciando
+   indietro esattamente le icone — il tipo di incoerenza che si scopre solo
+   dopo averla pubblicata.
+
+   Ora gli SVG dichiarano `currentColor` e il valore arriva da qui. Il colore
+   sta sull'icona e non sul contenitore di proposito: `.location__link` diventa
+   magenta al passaggio del mouse, e un'icona che eredita dal link cambierebbe
+   colore insieme al testo, perdendo l'accento proprio quando serve. */
+.site-nav__icon-link,
+.hero__info-icon,
+.about__decor,
+.tag svg,
+.location__link svg,
+.nightlife__content .btn--outline svg,
+/* Nel footer il colore va messo sull'SVG e non sul link: `.site-footer__link`
+   dichiara già `color: white` e, con un selettore classe+elemento, vince su
+   `.site-footer__icon-link`. Scendere di un livello evita di alzare la
+   specificità solo per litigare con una regola vicina. */
+.site-footer__icon-link svg {
+  color: var(--color-magenta);
+}
+
+/* I due controlli a icona bianca — hamburger e chiusura overlay — sono
+   <button>, e un button senza `color` esplicito non eredita dal body: prende
+   `buttontext` dall'user agent, che è nero. Con lo stroke passato a
+   `currentColor` sarebbero diventati due icone nere su fondo nero. */
+.site-nav__toggle,
+.site-nav__overlay-close {
+  color: var(--color-white);
+}
+
+/* --- Superfici -----------------------------------------------------------
+   Card del menu, tile della galleria e pannello mappa fanno lo stesso mestiere
+   — un piano rialzato sul nero — ma erano vestite in tre modi diversi: raggio
+   18, 14 e 18, e ognuna ridichiarava per conto suo bordo e ombra. Su un fondo
+   scuro sono proprio quei tre valori a dire "questi oggetti sono parenti",
+   e tre raggi diversi li facevano sembrare presi da pagine diverse.
+
+   Definizione in un punto solo. Chi deve distinguersi lo fa aggiungendo
+   (il pannello Instagram si tiene il suo bordo magenta), non ricominciando
+   da capo. */
+.menu__card,
+.gallery__item,
+.location__map {
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--hairline);
+  box-shadow: var(--shadow-depth-md);
+}
+
+/* ==========================================================================
+   Animations
+   ========================================================================== */
+
+@keyframes scroll-bounce {
+  0%, 100% { transform: translateY(0); opacity: .55; }
+  50% { transform: translateY(10px); opacity: 1; }
+}
+
+@keyframes neon-flicker {
+  0%, 100% { opacity: 1; }
+  92% { opacity: 1; }
+  93% { opacity: .82; }
+  94% { opacity: 1; }
+  96% { opacity: .7; }
+  97% { opacity: 1; }
+}
+
+/* ==========================================================================
+   Hero
+   ========================================================================== */
+
+.hero {
+  position: relative;
+  /* Doppio valore voluto: la prima riga è il fallback per i browser senza
+     svh. Con 100vh la barra degli indirizzi di iOS Safari e Chrome Android
+     taglia la hero e spinge le CTA sotto la piega. */
+  min-height: 100vh;
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 32px;
+}
+
+.hero__bg {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+}
+
+/* Il 15% di altezza in più (e il ritaglio che lo compensa) è il margine di
+   manovra del parallasse: senza, spostando l'immagine si scoprirebbe il nero
+   sotto. È fatto con height e top invece che con `transform: scale` perché su
+   questa immagine il transform lo scrive GSAP, e due sorgenti sulla stessa
+   proprietà finiscono sempre per sovrascriversi. Senza JS resta solo
+   un'inquadratura leggermente più stretta: nessun difetto visibile. */
+.hero__bg-img {
+  position: absolute;
+  top: -7.5%;
+  left: 0;
+  width: 100%;
+  height: 115%;
+  object-fit: cover;
+}
+
+/* Tre livelli invece di uno. Il radiale scurisce al centro per far reggere il
+   testo; la vignettatura chiude gli angoli; la sfumatura verticale in fondo
+   fonde la hero col nero della sezione successiva, così il taglio netto fra
+   foto e pagina sparisce. È la stessa logica di una copertina stampata. */
+.hero__bg-overlay {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(to bottom, rgba(0, 0, 0, 0.55) 0%, transparent 22%, transparent 62%, rgba(0, 0, 0, 0.92) 92%, #000 100%),
+    radial-gradient(ellipse 120% 90% at 50% 45%, transparent 30%, rgba(0, 0, 0, 0.72) 100%),
+    /* Il velo centrale scende da 0.90 a 0.72. A 0.90 la foto del bancone era
+       praticamente un rettangolo nero: si pagava il costo di caricare l'LCP
+       senza vederne niente. A 0.72 il locale si legge e resta comunque cupo.
+       Il testo sopra non perde nulla — il claim ha la sua ombra, la barra
+       informazioni ha il pannello vetroso e i bottoni sono pieni. */
+    radial-gradient(ellipse 70% 60% at 50% 50%, rgba(0, 0, 0, 0.72) 0%, rgba(0, 0, 0, 0.74) 55%, rgba(0, 0, 0, 0.82) 100%);
+  pointer-events: none;
+}
+
+.hero__content {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-5);
+  max-width: 900px;
+}
+
+/* Il logo è l'unico elemento che tiene il glow al massimo: è il livello 1
+   della scala, e nella pagina ce n'è uno solo. */
+.hero__logo-wrap {
+  width: min(72vw, 380px);
+  animation: neon-flicker 5s infinite;
+}
+
+.hero__logo {
+  width: 100%;
+  height: auto;
+  filter: drop-shadow(0 0 26px rgba(var(--color-magenta-rgb), 0.7)) drop-shadow(0 0 70px rgba(var(--color-magenta-rgb), 0.4));
+}
+
+/* Era un <h1>: il claim resta identico a vedersi, ma l'h1 vero è dentro
+   <main>, in cima a "Chi siamo". Le regole sono solo state spostate dal
+   selettore di tag alla classe. */
+.hero__claim {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: clamp(30px, 4.6vw, 56px);
+  line-height: 1;
+  letter-spacing: -0.015em;
+  color: var(--color-white);
+  text-shadow: 0 2px 18px rgba(0, 0, 0, 0.6);
+}
+
+/* Barra informazioni raccolta dentro un contenitore vetroso invece che
+   appoggiata sulla foto. Sulla hero il testo piccolo su immagine è sempre il
+   punto debole: il fondo sfocato lo stacca senza doverlo ingrandire. */
+.hero__info {
+  list-style: none;
+  margin: 4px 0 0;
+  padding: 12px 26px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 10px 22px;
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: 0.3px;
+  color: var(--color-white);
+  opacity: 0.92;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: var(--radius-pill);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+.hero__info-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  white-space: nowrap;
+}
+
+.hero__info-item + .hero__info-item {
+  padding-left: 22px;
+  border-left: 1px solid rgba(255, 255, 255, 0.25);
+}
+
+.hero__info-icon { flex-shrink: 0; }
+
+.hero__status-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.35);
+  transition: background var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.hero__status--open .hero__status-dot {
+  background: rgb(var(--color-status-open-rgb));
+  box-shadow: 0 0 8px rgba(var(--color-status-open-rgb), 0.9);
+}
+
+.hero__status--opening-soon .hero__status-dot {
+  background: rgb(var(--color-status-soon-rgb));
+  box-shadow: 0 0 8px rgba(var(--color-status-soon-rgb), 0.9);
+}
+
+.hero__status--closed .hero__status-dot {
+  background: rgb(var(--color-status-closed-rgb));
+  box-shadow: 0 0 8px rgba(var(--color-status-closed-rgb), 0.9);
+}
+
+.hero__status--open .hero__status-text {
+  color: rgb(var(--color-status-open-rgb));
+}
+
+.hero__status--opening-soon .hero__status-text,
+.hero__status--closed .hero__status-text {
+  opacity: 0.7;
+}
+
+.hero__actions {
+  margin-top: 12px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  justify-content: center;
+}
+
+.hero__scroll-indicator {
+  position: absolute;
+  bottom: 28px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1;
+  animation: scroll-bounce 2.2s ease-in-out infinite;
+}
+
+.hero__scroll-track {
+  width: 22px;
+  height: 36px;
+  border: 2px solid rgba(255, 255, 255, 0.55);
+  border-radius: 14px;
+  display: flex;
+  justify-content: center;
+  padding-top: 6px;
+}
+
+.hero__scroll-dot {
+  width: 3px;
+  height: 8px;
+  border-radius: 2px;
+  background: var(--color-magenta);
+  box-shadow: 0 0 8px rgba(var(--color-magenta-rgb), 0.9);
+}
+
+/* ==========================================================================
+   Chi siamo
+   ========================================================================== */
+
+.about {
+  position: relative;
+  padding: var(--space-section) var(--section-px);
+  display: flex;
+  flex-wrap: wrap;
+  gap: clamp(40px, 6vw, 80px);
+  align-items: center;
+  justify-content: center;
+  max-width: var(--container-max);
+  margin: 0 auto;
+}
+
+/* Lo sghiribizzo aveva mezzo punto di opacità e un alone acceso: con tutto il
+   resto della pagina messo a dieta di glow era rimasto uno dei pochi elementi
+   luminosi senza un motivo gerarchico, e a fianco del titolo leggeva come uno
+   scarabocchio capitato lì. Resta, ma come segno di sfondo: niente alone,
+   opacità dimezzata, tratto più sottile. */
+/* Il tratto era ancorato alla sezione, non al testo: con `.about` centrata in
+   flex finiva 82px sopra l'occhiello e 100px alla sua sinistra, cioè a
+   galleggiare sotto la navbar senza toccare niente. Non era un problema di
+   intensità — era già stato smorzato una volta — ma di appartenenza: un segno
+   disegnato a mano deve sembrare posato *su qualcosa*.
+
+   Ora sta dentro `.about__text` e si posiziona rispetto a quel blocco, sopra
+   l'angolo del titolo. `z-index: -1` lo manda dietro al testo restando davanti
+   al fondo della pagina: `.about__text` ha già un `z-index: 1` che crea il
+   contesto di impilamento, quindi il negativo non sfugge al blocco.
+
+   Passa dietro al titolo e non dietro all'occhiello, e non è un dettaglio: il
+   titolo è bianco su nero a 21:1 e un tratto magenta al 28% non lo scalfisce,
+   mentre l'occhiello è magenta a 5.38:1 e con lo stesso tratto sotto scendeva
+   sotto soglia — lo stesso budget di contrasto già annotato per la filigrana
+   della sezione eventi. */
+.about__decor {
+  position: absolute;
+  top: 24px;
+  left: -70px;
+  width: 320px;
+  height: 150px;
+  z-index: -1;
+  pointer-events: none;
+  opacity: 0.28;
+}
+
+.about__decor path { stroke-width: 2.5; }
+
+/* Sommario. Sta fra il titolo e il racconto e fa il lavoro che prima toccava
+   all'h1 spaiato: dire in una riga cosa è BEVO e dove sta. Più grande del
+   corpo testo e con un filo magenta a sinistra, così si legge come un
+   occhiello e non come il primo paragrafo. */
+.about__lead {
+  margin: 0;
+  padding-left: 18px;
+  border-left: 2px solid rgba(var(--color-magenta-rgb), 0.5);
+  font-size: clamp(17px, 1.6vw, 19px);
+  line-height: 1.5;
+  font-weight: 500;
+  color: var(--color-white);
+  opacity: 0.92;
+}
+
+.about__text {
+  position: relative;
+  z-index: 1;
+  flex: 1 1 420px;
+  min-width: 280px;
+  max-width: 520px;
+  display: flex;
+  flex-direction: column;
+  /* Gap ridotto: eyebrow, titolo e sommario sono un blocco unico, non tre
+     elementi separati. Lo stacco dal racconto lo dà il margine qui sotto. */
+  gap: var(--space-5);
+}
+
+.about__text .body-text { margin-top: var(--space-2); }
+
+.about__media {
+  position: relative;
+  z-index: 1;
+  flex: 1 1 420px;
+  min-width: 280px;
+  max-width: 520px;
+}
+
+/* Cornice sfalsata: un rettangolo di solo bordo spostato in diagonale dietro
+   alla foto. Costa un pseudo-elemento e dà alla sezione la profondità che un
+   rettangolo appoggiato sul nero non ha. */
+.about__media::before {
+  content: "";
+  position: absolute;
+  inset: var(--space-6) calc(var(--space-6) * -1) calc(var(--space-6) * -1) var(--space-6);
+  border: 1px solid rgba(var(--color-magenta-rgb), 0.4);
+  border-radius: var(--radius-lg);
+  pointer-events: none;
+}
+
+.about__photo {
+  position: relative;
+  width: 100%;
+  height: clamp(340px, 42vw, 460px);
+  object-fit: cover;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-depth-lg), 0 0 0 1px rgba(255, 255, 255, 0.07);
+}
+
+/* Da mobile la sezione è già stretta e la cornice sfalsata uscirebbe dai
+   margini, aggiungendo scroll orizzontale invece che profondità. */
+@media (max-width: 900px) {
+  .about__media::before { display: none; }
+}
+
+/* ==========================================================================
+   Menu
+   ========================================================================== */
+
+/* Fondo più generoso del resto: subito sotto c'è l'aperitivo, che è il momento
+   forte della pagina. La pausa lunga prima serve a farlo arrivare. */
+.menu {
+  position: relative;
+  padding: var(--space-section) var(--section-px);
+  max-width: var(--container-max);
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: clamp(40px, 5vw, 64px);
+}
+
+/* Intro di sezione: occhiello, titolo, sommario, centrati. `.menu__intro` e
+   `.gallery__intro` sono lo stesso blocco, ma erano scritti due volte con due
+   gap (18 e 14px) e due larghezze (780 e 720px) diversi — differenze che
+   nessuno aveva deciso, e che si vedevano passando da una sezione all'altra.
+   Una definizione sola, e la misura è il token stretto: il sommario è corpo
+   testo centrato, e centrato la riga lunga si legge ancora peggio. */
+.menu__intro,
+.gallery__intro {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-5);
+  text-align: center;
+  max-width: var(--container-narrow);
+}
+
+.menu__grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-7);
+  width: 100%;
+}
+
+.menu__grid > * { min-width: 0; }
+
+/* Il bordo magenta al 40% è stato sostituito da una hairline chiarissima più
+   un fondo in gradiente. Motivo: tre card con cornice magenta su fondo nero
+   leggevano come tre bottoni giganti e portavano via attenzione alla CTA
+   sotto. Ora la card è una superficie, non un contorno — e la profondità la
+   fanno il gradiente e l'ombra, non la luce colorata. */
+.menu__card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  padding: 0;
+  overflow: hidden;
+  background: linear-gradient(168deg, var(--surface-2) 0%, var(--surface-1) 55%, #060608 100%);
+}
+
+/* Filo magenta sul bordo alto: un solo accento colorato per card, dove segna
+   l'inizio della superficie invece di girarci intorno. */
+.menu__card::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 22px;
+  right: 22px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(var(--color-magenta-rgb), 0.75), transparent);
+  pointer-events: none;
+}
+
+/* Nessuno stato :hover: la card è un <article> non cliccabile, il glow
+   prometteva un'interazione che non esiste. Resta valido anche col nuovo
+   trattamento — l'unica cosa cliccabile della sezione è la CTA in fondo. */
+
+.menu__card-media {
+  position: relative;
+  overflow: hidden;
+}
+
+.menu__card-photo {
+  width: 100%;
+  height: 250px;
+  object-fit: cover;
+  border-radius: 0;
+}
+
+/* Sfumatura sul bordo basso della foto: cuce l'immagine alla superficie della
+   card invece di lasciarla come un rettangolo appiccicato sopra. */
+.menu__card-media::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to bottom, transparent 45%, rgba(6, 6, 8, 0.55) 78%, var(--surface-1) 100%);
+  pointer-events: none;
+}
+
+.menu__card-body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding: var(--space-6) var(--space-6) var(--space-7);
+}
+
+.menu__card-title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: clamp(24px, 2.4vw, 29px);
+  letter-spacing: -0.01em;
+  color: var(--color-white);
+}
+
+.menu__card-desc {
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.55;
+  color: var(--color-white);
+  opacity: 0.72;
+}
+
+.menu__cta {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+
+.menu__note {
+  margin: 0;
+  font-size: 14px;
+  color: var(--color-white);
+  opacity: 0.5;
+  text-align: center;
+  max-width: 420px;
+}
+
+/* ==========================================================================
+   Aperitivo
+   ========================================================================== */
+
+/* Il `min-height: 100svh` che stava qui è la ragione per cui i vuoti attorno a
+   questa sezione erano fuori scala, e non si vedeva guardando i padding.
+
+   Il contenuto è alto 514px; forzando la sezione a un viewport pieno (900px)
+   restavano 386px di avanzo, che `justify-content: center` divideva in due:
+   193px sopra e 193 sotto. Sommati al padding della sezione confinante
+   facevano 361px verso il menu e 317 verso gli eventi, contro i 248 di tutte
+   le altre. Un padding scritto a mano (80px) su una sezione la cui altezza
+   reale la decideva il viewport: due sorgenti per la stessa distanza, e
+   nessuna delle due leggibile dall'altra.
+
+   Senza min-height l'altezza la detta il contenuto, il padding torna a essere
+   l'unica cosa che governa la distanza, e questa sezione respira come le
+   altre. La foto di sfondo e il carattere di banda a tutta larghezza non
+   cambiano: cambia solo che non pretende più uno schermo intero. */
+.aperitivo {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: var(--space-section) var(--section-px);
+}
+
+.aperitivo__bg {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+}
+
+/* Stesso overscan della hero, stesso motivo. */
+.aperitivo__bg-img {
+  position: absolute;
+  top: -7.5%;
+  left: 0;
+  width: 100%;
+  height: 115%;
+  object-fit: cover;
+}
+
+/* Stessa costruzione della hero: qui però la sfumatura chiude su entrambi i
+   lati, perché la sezione ha nero sopra e nero sotto e deve emergere dal
+   fondo invece che essere incollata sopra. */
+.aperitivo__bg-overlay {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(to bottom, #000 0%, rgba(0, 0, 0, 0.86) 12%, transparent 34%, transparent 66%, rgba(0, 0, 0, 0.86) 88%, #000 100%),
+    radial-gradient(ellipse 120% 90% at 50% 50%, transparent 28%, rgba(0, 0, 0, 0.7) 100%),
+    radial-gradient(ellipse 70% 60% at 50% 50%, rgba(0, 0, 0, 0.9) 0%, rgba(0, 0, 0, 0.87) 55%, rgba(0, 0, 0, 0.92) 100%);
+  pointer-events: none;
+}
+
+.aperitivo__content {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+  max-width: 820px;
+}
+
+/* Eccezione voluta alla dieta di glow: è l'insegna della pagina, l'unico posto
+   dove il neon deve gridare. Tutto il resto è stato smorzato proprio perché
+   questo momento avesse spazio per esistere. */
+.aperitivo__hours {
+  margin: 18px 0 0;
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: clamp(56px, 12vw, 150px);
+  line-height: 0.95;
+  letter-spacing: -0.02em;
+  color: var(--color-magenta);
+  text-shadow:
+    0 0 18px rgba(var(--color-magenta-rgb), 0.85),
+    0 0 48px rgba(var(--color-magenta-rgb), 0.6),
+    0 0 110px rgba(var(--color-magenta-rgb), 0.42);
+}
+
+.aperitivo__content .body-text { margin-top: 18px; max-width: 560px; }
+
+/* Prezzo. Era l'unico elemento a taglia display di tutta la pagina composto in
+   Inter — 48px, peso 800 — mentre claim, titoli, orario e titoli delle card
+   sono tutti Anton 400: a mezzo metro dall'orario al neon si leggeva come un
+   lettering preso da un altro sito. Era anche l'unica regola del foglio a
+   misurare in `rem` invece che in px.
+
+   Il contenitore è un'insegna al neon, non una pillola di vetro. Il vetro —
+   velo bianco, filo tenue, sfocatura — è un materiale di interfaccia: sta bene
+   sulla barra informazioni della hero, dove deve sparire dietro il contenuto,
+   ma qui faceva esattamente il contrario di quel che serve, cioè non si faceva
+   guardare. Il neon invece è il materiale del locale, ed è l'unico modo di
+   avere un contenitore che attira l'occhio restando dentro il brand.
+
+   Costruzione a tubo: interno quasi nero, bordo magenta acceso, alone fuori
+   *e* dentro. È l'alone interno a fare la differenza fra "rettangolo con un
+   bordo colorato" e "tubo che illumina la propria cavità".
+
+   Forma: rettangolo, non pillola. In questo foglio `--radius-pill` è la forma
+   dei controlli — `.btn`, `.tag`, `.quick-bar__item` la usano tutti — quindi
+   una pillola dice "cliccami" prima ancora che si legga cosa c'è scritto.
+   Impilata sopra la CTA il problema raddoppiava: due capsule identiche una
+   sull'altra, una da premere e una no. Il raggio minimo la riporta a essere
+   una targa.
+
+   Composizione in colonna e non in riga: "DA" sopra, cifra sotto. Un'etichetta
+   impilata si legge come cartellino, una in riga come stringa di interfaccia.
+
+   Posizione: da 1200px in su esce dal flusso e si appoggia a lato dell'orario,
+   ruotata di 5°. La sezione ha oltre 300px vuoti per lato a quelle larghezze,
+   e lì il badge smette di fare colonna con il bottone. La rotazione è la
+   stessa lingua delle polaroid della sezione eventi: carta appoggiata, non
+   elemento allineato a griglia.
+   Sotto i 1200px torna nel flusso, dritto e centrato: lo spazio laterale non
+   c'è più e un absolute lì diventerebbe una collisione. */
+.aperitivo__price {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-2);
+  margin: var(--space-5) 0 0;
+  padding: var(--space-4) var(--space-6);
+  border-radius: var(--radius-sm);
+  line-height: 1;
+  /* L'interno resta più scuro del fondo pagina: è quello a far leggere il
+     bordo come un tubo acceso invece che come una cornice disegnata. Il
+     radiale che sale dal basso simula la luce che il tubo riversa dentro. */
+  background:
+    radial-gradient(130% 170% at 50% 135%, rgba(var(--color-magenta-rgb), 0.32) 0%, transparent 64%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0) 46%),
+    #07070A;
+  border: 1.5px solid rgba(var(--color-magenta-rgb), 0.85);
+  box-shadow:
+    var(--glow-cta),
+    inset 0 0 26px rgba(var(--color-magenta-rgb), 0.22);
+}
+
+/* Fuori dal badge "Da" in Anton maiuscolo si confondeva con l'occhiello della
+   sezione. Dentro un contenitore chiuso il rischio non c'è più — si legge come
+   parte dell'insegna — e il display magenta lo lega al bordo invece di farlo
+   sembrare una didascalia rimasta lì. */
+.aperitivo__price-from {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: var(--text-sm);
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--color-magenta);
+  text-shadow: var(--glow-text);
+}
+
+.aperitivo__price-value {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: clamp(46px, 5.8vw, 66px);
+  letter-spacing: -0.03em;
+  line-height: 0.9;
+  color: var(--color-white);
+}
+
+/* Alone al livello minimo della scala: il simbolo è piccolo, e su fondo nero
+   il magenta pieno senza un filo di luce sembra spento accanto al bianco. */
+.aperitivo__price-cur {
+  color: var(--color-magenta);
+  text-shadow: var(--glow-text);
+}
+
+/* Fuori dal flusso solo dove c'è davvero spazio. A 1200px il contenuto della
+   sezione è largo 820px e centrato: restano ~190px liberi per lato, abbastanza
+   perché la targa si appoggi fuori dalla colonna di testo senza toccarla. */
+@media (min-width: 1200px) {
+  .aperitivo__price {
+    position: absolute;
+    top: 27%;
+    /* Misurato, non stimato: a 1425px i glifi dell'orario finiscono a x=1079 e
+       con lo scostamento precedente la targa partiva da 1045 — 34px di
+       sovrapposizione, che mangiavano l'ultimo "0" di 21:00. L'orario è
+       l'elemento più forte della sezione e non si copre. */
+    right: -158px;
+    margin: 0;
+    transform: rotate(5deg);
+  }
+}
+
+/* La rotazione è decorativa: chi ha chiesto meno movimento non la perde
+   (è statica), ma la si toglie comunque perché è un'inclinazione permanente
+   dell'interfaccia, non un'animazione. */
+@media (min-width: 1200px) and (prefers-reduced-motion: reduce) {
+  .aperitivo__price { transform: none; }
+}
+
+.aperitivo__content .btn { margin-top: 16px; }
+
+/* ==========================================================================
+   Nightlife (eventi)
+   ========================================================================== */
+
+/* Niente overflow:hidden: la filigrana è larga quanto il viewport e deve
+   poter uscire dai 900px della sezione. A contenere l'eccesso ci pensa
+   `overflow-x: hidden` sul body. */
+.nightlife {
+  position: relative;
+  padding: var(--space-section) var(--section-px);
+  max-width: 900px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: clamp(28px, 4vw, 44px);
+  text-align: center;
+}
+
+.nightlife .body-text--muted { max-width: 480px; }
+
+/* --- Filigrana di sfondo --- */
+
+/* Solo contorno, niente riempimento pieno: sopra ci passano titolo, badge e
+   testo, e una campitura magenta piena abbasserebbe troppo il contrasto.
+   Nessuna animazione: resta ferma dov'è. */
+.nightlife__watermark {
+  position: absolute;
+  /* Ancorata al bordo superiore del blocco di testo: da desktop la banda
+     cade sulla cucitura fra le foto e l'eyebrow, attraversando entrambi. */
+  top: 0;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 0;
+  white-space: nowrap;
+  font-family: var(--font-display);
+  /* Full-width: in Anton la stringa è larga ~7.8 volte il font-size, quindi
+     12.2vw la porta a ~95vw. Non arrivo a 100 di proposito: la barra di
+     scorrimento verticale non è inclusa in vw e mangerebbe il margine. */
+  font-size: 12.2vw;
+  line-height: 1;
+  /* Il fill quasi invisibile serve da fallback dove -webkit-text-stroke non
+     è supportato: la scritta resta accennata invece di sparire.
+     Budget di contrasto: sopra la filigrana passa l'eyebrow (magenta 14px,
+     5.4:1 sul nero puro) e sotto ci passa la griglia dello strato
+     atmosferico. Stroke 0.17 + fill 0.02 + griglia 0.045 fanno ~0.223 di
+     magenta composito, che tiene l'eyebrow a 4.5:1. Alzare una qualsiasi
+     delle tre lo porta sotto soglia. */
+  color: rgba(var(--color-magenta-rgb), 0.02);
+  -webkit-text-stroke: 1.5px rgba(var(--color-magenta-rgb), 0.17);
+  pointer-events: none;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+/* La ripetizione la genera il CSS invece di stare scritta due volte nel
+   markup: da mobile va tolta, e un contenuto puramente decorativo che deve
+   comparire o sparire con la larghezza è esattamente il caso d'uso di
+   ::after. Nel documento la parola resta una sola. */
+.nightlife__watermark::after {
+  content: " · NIGHTLIFE";
+}
+
+/* --- Foto in stile polaroid --- */
+
+.nightlife__photos {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: clamp(12px, 2.4vw, 24px);
+}
+
+.nightlife__photo {
+  flex: 1 1 0;
+  min-width: 0;
+  max-width: 260px;
+  height: auto;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  /* Cornice bianca col bordo inferiore più alto: è la proporzione della stampa
+     istantanea, ed è ciò che rende riconoscibile l'effetto. */
+  border: 7px solid #F2F2F2;
+  border-bottom-width: var(--space-5);
+  border-radius: var(--radius-sm);
+  /* L'alone magenta attorno alla cornice è stato tolto: una polaroid è carta,
+     e la carta non emette luce. Restava anche l'ultimo punto della pagina in
+     cui il glow compariva senza motivo gerarchico. La profondità ora è tutta
+     nell'ombra portata, che è ciò che le fa sembrare appoggiate davvero. */
+  box-shadow:
+    0 2px 4px rgba(0, 0, 0, 0.4),
+    0 14px 34px rgba(0, 0, 0, 0.72);
+  transition: transform 0.5s var(--ease-premium), box-shadow 0.5s var(--ease-premium);
+}
+
+/* Angoli alternati: le foto non sono allineate a griglia, sembrano appoggiate. */
+.nightlife__photo--1 { transform: rotate(-3.5deg); }
+.nightlife__photo--2 { transform: rotate(1deg) translateY(-8px); }
+.nightlife__photo--3 { transform: rotate(3deg); }
+
+@media (hover: hover) {
+  .nightlife__photo:hover {
+    transform: rotate(0deg) translateY(-12px) scale(1.04);
+    box-shadow:
+      0 4px 8px rgba(0, 0, 0, 0.45),
+      0 26px 54px rgba(0, 0, 0, 0.8);
+    z-index: 2;
+  }
+}
+
+/* --- Testo sotto le foto --- */
+
+/* Senza z-index di proposito: se creasse un contesto di impilamento, la
+   filigrana resterebbe confinata qui dentro e finirebbe sopra le foto,
+   che stanno in un altro ramo del DOM. */
+.nightlife__content {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+}
+
+/* Il testo va sopra la filigrana. Sono elementi statici: senza
+   posizionamento verrebbero dipinti prima di lei, che è assoluta. */
+.nightlife__content > *:not(.nightlife__watermark) {
+  position: relative;
+  z-index: 1;
+}
+
+.nightlife__badges {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 12px;
+}
+
+/* ==========================================================================
+   Galleria
+   ========================================================================== */
+
+.gallery {
+  position: relative;
+  padding: var(--space-section) var(--section-px);
+  max-width: var(--container-max);
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: clamp(34px, 4.5vw, 52px);
+}
+
+/* Griglia asimmetrica invece del masonry a 4 colonne. Con tre sole immagini
+   il masonry non ha materiale per funzionare: servono pochi blocchi di peso
+   diverso, che è quello che fa una composizione editoriale.
+
+   Riga 1: [ foto 1 ×2 ][ cta ]   il pannello scavalca due righe
+   Riga 2: [ foto 2 ×2 ][  ↑  ]
+
+   Le due foto stanno in caselle orizzontali perché sono nate orizzontali
+   (1200×675 e 1200×514): infilarne una in una casella verticale non la
+   ritagliava, la mostrava per intero con mezzo riquadro di muro scuro sopra.
+   La casella alta la prende il pannello di testo, che al contrario ci sta
+   benissimo. Posizionamento esplicito e non automatico: con lo span 2 il
+   flusso "sparse" non torna indietro a riempire la terza colonna e
+   spingerebbe il pannello su una terza riga. */
+.gallery__grid {
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-auto-rows: 260px;
+  gap: var(--space-4);
+}
+
+.gallery__item--wide  { grid-column: 1 / 3; grid-row: 1; }
+.gallery__item--wide2 { grid-column: 1 / 3; grid-row: 2; }
+.gallery__item--cta   { grid-column: 3;     grid-row: 1 / 3; }
+
+.gallery__item {
+  position: relative;
+  margin: 0;
+  overflow: hidden;
+}
+
+.gallery__img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.9s var(--ease-premium);
+}
+
+/* Il tagliere sta nella metà bassa dello scatto: in una casella più bassa
+   dell'originale il ritaglio centrale ne taglierebbe via un pezzo. */
+.gallery__item--wide2 .gallery__img { object-position: center 68%; }
+
+/* --- Trattamento delle tile ----------------------------------------------
+   Qui c'era un duotone magenta pieno (grayscale + `mix-blend-mode: color`).
+   Serviva a mascherare il fatto che questi scatti compaiono anche altrove,
+   ma il conto era troppo salato: appiattiva tre foto diverse in un unico
+   blocco viola e buttava via la luce del locale, che è la cosa migliore che
+   queste immagini hanno. Bastava guardare le card del menu — stesse foto, a
+   colori naturali — per vedere che il trattamento peggiorava le cose.
+
+   Ora le immagini restano com'erano, con un filo di contrasto e saturazione
+   in più, e la coesione la dà un velo magenta in `soft-light` ad alfa bassa:
+   si sente come luce d'ambiente, non come filtro. La ripetizione è invece
+   risolta alla radice, cambiando quali foto si usano (vedi index.html). */
+.gallery__grid--placeholder .gallery__img {
+  filter: contrast(1.06) saturate(1.08);
+}
+
+.gallery__grid--placeholder .gallery__item:not(.gallery__item--cta)::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background: linear-gradient(155deg, rgba(var(--color-magenta-rgb), 0.3) 0%, rgba(var(--color-magenta-rgb), 0.06) 100%);
+  mix-blend-mode: soft-light;
+  pointer-events: none;
+}
+
+/* Scrim scuro sopra il duotone: riporta giù la luminosità nei bordi bassi,
+   dove la griglia tocca il nero della pagina, così le tile non sembrano
+   ritagli incollati. */
+.gallery__grid--placeholder .gallery__item:not(.gallery__item--cta)::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.42) 0%, rgba(0, 0, 0, 0.06) 40%, transparent 100%);
+  pointer-events: none;
+}
+
+/* --- Pannello Instagram --------------------------------------------------
+   È l'unica tile cliccabile della sezione, quindi è anche l'unica che si
+   muove al passaggio del mouse: la regola che c'era prima (niente hover su
+   ciò che non è interattivo) vale ancora. */
+/* Il pannello è largo due colonne: con tutto il testo schiacciato in basso a
+   sinistra restavano due terzi di vuoto e sembrava una tile non finita.
+   L'handle sale in cima e il titolo cresce, così il blocco occupa l'altezza
+   che ha davvero. */
+.gallery__item--cta {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 30px 32px;
+  text-decoration: none;
+  color: var(--color-white);
+  background:
+    radial-gradient(120% 100% at 0% 100%, rgba(var(--color-magenta-rgb), 0.42) 0%, transparent 62%),
+    linear-gradient(165deg, var(--surface-3) 0%, #08080A 100%);
+  border-color: rgba(var(--color-magenta-rgb), 0.32);
+  transition: border-color var(--transition-med), box-shadow var(--transition-med), transform var(--transition-med);
+}
+
+@media (hover: hover) {
+  .gallery__item--cta:hover {
+    border-color: var(--color-magenta);
+    box-shadow: var(--glow-soft), var(--shadow-depth-md);
+    transform: translateY(-4px);
+  }
+}
+
+.gallery__cta-handle {
+  font-size: 13px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--color-magenta);
+}
+
+/* Il titolo e l'azione stanno insieme in fondo: sono una cosa sola, il
+   `space-between` deve separare l'handle da loro, non loro fra di sé. */
+.gallery__cta-title {
+  margin-top: auto;
+  font-family: var(--font-display);
+  font-size: clamp(26px, 3.2vw, 42px);
+  line-height: 1;
+  letter-spacing: -0.015em;
+}
+
+.gallery__cta-action {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 14px;
+  font-size: 14px;
+  font-weight: 600;
+  opacity: 0.85;
+  transition: opacity var(--transition-fast), gap var(--transition-fast);
+}
+
+@media (hover: hover) {
+  .gallery__item--cta:hover .gallery__cta-action { opacity: 1; gap: 12px; }
+}
+
+/* ==========================================================================
+   Dove siamo
+   ========================================================================== */
+
+.location {
+  position: relative;
+  padding: var(--space-section) var(--section-px);
+  max-width: var(--container-max);
+  margin: 0 auto;
+  display: flex;
+  flex-wrap: wrap;
+  gap: clamp(40px, 6vw, 72px);
+  align-items: center;
+}
+
+.location__info {
+  flex: 1 1 420px;
+  min-width: 280px;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+}
+
+.location__address {
+  margin: 6px 0 0;
+  font-size: 17px;
+  font-weight: 600;
+  color: var(--color-white);
+}
+
+.location__hours {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 15px;
+  color: var(--color-white);
+  opacity: 0.8;
+  padding-top: 8px;
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.location__hours-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 8px 0;
+}
+
+.location__hours-row + .location__hours-row {
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.location__links {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding-top: 8px;
+}
+
+.location__link {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--color-white);
+  text-decoration: none;
+  font-size: 15px;
+  opacity: 0.9;
+  transition: color var(--transition-fast);
+}
+
+.location__link:hover { color: var(--color-magenta); }
+
+.location__cta {
+  margin-top: 10px;
+  width: fit-content;
+}
+
+.location__map-col {
+  flex: 1 1 420px;
+  min-width: 280px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.location__map {
+  position: relative;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 440px;
+  background:
+    radial-gradient(90% 70% at 50% 0%, rgba(var(--color-magenta-rgb), 0.16) 0%, transparent 70%),
+    linear-gradient(168deg, var(--surface-2) 0%, #07070A 100%);
+  overflow: hidden;
+}
+
+/* Reticolo appena percettibile dentro il pannello: suggerisce "mappa" prima
+   ancora che la mappa venga caricata, senza mostrare nulla di Google. */
+.location__map:has(.location__map-facade)::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image:
+    repeating-linear-gradient(to right, rgba(255, 255, 255, 0.045) 0 1px, transparent 1px 44px),
+    repeating-linear-gradient(to bottom, rgba(255, 255, 255, 0.045) 0 1px, transparent 1px 44px);
+  -webkit-mask-image: radial-gradient(ellipse 75% 65% at 50% 50%, #000 20%, transparent 78%);
+  mask-image: radial-gradient(ellipse 75% 65% at 50% 50%, #000 20%, transparent 78%);
+  pointer-events: none;
+}
+
+.location__map-frame {
+  width: 100%;
+  height: 100%;
+  border: 0;
+  display: block;
+}
+
+.location__map-facade {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 18px;
+  padding: 24px;
+  text-align: center;
+}
+
+.location__map-address {
+  margin: 0;
+  font-size: 16px;
+  line-height: 1.6;
+  color: var(--color-white);
+  opacity: 0.9;
+}
+
+.location__map-address strong {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: 24px;
+  letter-spacing: 1px;
+}
+
+.location__map-note {
+  margin: 0;
+  max-width: 320px;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--color-white);
+  opacity: 0.6;
+}
+
+/* Erano due righe di testo sottolineato sotto un pannello alto 440px: si
+   leggevano come una nota a piè di mappa invece che come le due scorciatoie
+   che sono. Ora usano `.tag--link`, che in questo foglio è già la forma di
+   un'etichetta cliccabile — la stessa di Privacy/Cookie nel footer.
+
+   `.tag` e non `.btn--outline`: il bordo del tag sta a 0.35 di magenta contro
+   lo 0.55 del bottone, quindi restano un gradino sotto "Carica la mappa" lì
+   dentro il pannello, che a sua volta sta sotto la CTA di prenotazione. La
+   gerarchia della sezione resta quella di prima, cambia solo la leggibilità.
+
+   Le vecchie regole su `.location__map-links a` sono state tolte e non
+   sovrascritte: `a:hover { color: magenta }` pesa (0,2,1) e avrebbe battuto
+   `.tag--link:hover` (0,2,0), tingendo di magenta anche il testo. Sarebbe
+   finito il contrario di quel che serve — l'icona è già magenta, e l'accento
+   si vede solo finché il testo resta bianco (vedi il blocco delle icone). */
+.location__map-links {
+  margin: 0;
+  display: flex;
+  flex-wrap: wrap;
+  /* 12px: sopra gli 8 minimi fra due target adiacenti, e i 44×44 di area
+     cliccabile li porta già il ::before di `.tag--link`. */
+  gap: var(--space-3);
+}
+
+/* ==========================================================================
+   Footer
+   ========================================================================== */
+
+/* Tre blocchi: brand+social, "Esplora" (le stesse ancore dell'overlay di
+   navigazione, per chi arriva in fondo alla pagina senza voler risalire) e
+   "Contatti" (le stesse voci di `.location__links`, ripetute qui perché un
+   footer è il posto in cui ci si aspetta di trovarle senza cercare). Sotto,
+   separato da un filo magenta, il blocco dei dati legali: prima era una sola
+   frase-fiume con tutto dentro, comprese le due voci Privacy/Cookie appese in
+   fondo con un punto medio. Ora il registro societario e l'indirizzo stanno
+   su due righe proprie e Privacy/Cookie sono due tag cliccabili a sé, non più
+   due parole nascoste nel grigio. */
+.site-footer {
+  border-top: 1px solid rgba(var(--color-magenta-rgb), 0.25);
+  padding: var(--space-16) var(--section-px) var(--space-10);
+}
+
+.site-footer__inner {
+  max-width: var(--container-max);
+  margin: 0 auto;
+}
+
+.site-footer__top {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr 1fr;
+  gap: var(--space-10);
+}
+
+.site-footer__brand {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-4);
+}
+
+.site-footer__logo-link { line-height: 0; }
+
+.site-footer__logo {
+  height: 30px;
+  width: auto;
+  filter: drop-shadow(0 0 10px rgba(var(--color-magenta-rgb), 0.6));
+}
+
+.site-footer__tagline {
+  margin: 0;
+  max-width: 26ch;
+  font-size: var(--text-md);
+  color: var(--color-white);
+  opacity: 0.6;
+}
+
+.site-footer__social {
+  display: flex;
+  align-items: center;
+  gap: 28px;
+}
+
+.site-footer__col {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+}
+
+.site-footer__col-title {
+  margin: 0 0 8px;
+  font-family: var(--font-display);
+  font-size: var(--text-xs);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--color-magenta);
+  opacity: 0.9;
+}
+
+.site-footer__address { display: contents; }
+
+.site-footer__link {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  color: var(--color-white);
+  opacity: 0.7;
+  font-size: var(--text-md);
+  text-decoration: none;
+  transition: color var(--transition-fast), opacity var(--transition-fast),
+              transform var(--transition-fast);
+}
+
+.site-footer__link:hover {
+  color: var(--color-magenta);
+  opacity: 1;
+}
+
+/* Lo scarto laterale sta dentro `@media (hover: hover)` e non nella regola
+   sopra: su touch il :hover resta appiccicato dopo il tap, e la voce
+   rimarrebbe spostata di 4px finché non si tocca altrove. Il colore può
+   permetterselo, uno spostamento no.
+
+   Quattro pixel: quanto basta perché la riga risponda al puntatore senza che
+   la colonna sembri ballare. Qui l'hover è onesto — sono link veri, che
+   portano da qualche parte — al contrario delle card del menu, dove il CSS
+   lo rifiuta di proposito. */
+@media (hover: hover) {
+  .site-footer__link:hover { transform: translateX(4px); }
+}
+
+.site-footer__icon-link {
+  display: inline-flex;
+  line-height: 0;
+  opacity: 0.85;
+  transition: opacity var(--transition-fast);
+}
+
+.site-footer__icon-link svg { transition: filter var(--transition-fast); }
+
+.site-footer__icon-link:hover {
+  opacity: 1;
+}
+
+.site-footer__icon-link:hover svg {
+  filter: drop-shadow(0 0 6px rgba(var(--color-magenta-rgb), 0.8));
+}
+
+.site-footer__divider {
+  margin: var(--space-10) 0 var(--space-6);
+  height: 1px;
+  background: linear-gradient(90deg, rgba(var(--color-magenta-rgb), 0.32), rgba(var(--color-magenta-rgb), 0.08) 60%, transparent);
+}
+
+.site-footer__bottom {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--space-4) var(--space-8);
+  /* Il bottone "torna su" è `position: fixed` a 32px dal bordo destro dello
+     schermo (vedi .back-to-top) e resta visibile qui in fondo alla pagina.
+     Sotto i ~1264px .site-footer__inner tocca il bordo del padding invece di
+     restare centrato dentro i suoi 1200px, e senza questo margine i tag
+     Privacy/Cookie finirebbero esattamente sotto al cerchio. 72px liberano
+     il bottone (48px + 32px di margine) con un filo di respiro. */
+  padding-right: 72px;
+}
+
+.site-footer__legal-block {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.site-footer__copy {
+  margin: 0;
+  font-size: 13px;
+  color: var(--color-white);
+  opacity: 0.6;
+}
+
+/* Dati legali: registro societario su una riga, sede su un'altra. I due <br>
+   nel markup sono voluti — è un indirizzo e un elenco di identificativi, non
+   una frase, e non deve andare a capo dove capita. */
+.site-footer__legal {
+  margin: 0;
+  max-width: 46ch;
+  font-size: 12px;
+  line-height: 1.7;
+  color: var(--color-white);
+  opacity: 0.45;
+}
+
+.site-footer__legal-links {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* `.tag.tag--link` è già il pattern del sito per un'etichetta cliccabile con
+   bordo e sfondo appena accennati; qui basta rimpicciolirlo perché non
+   sovrasti il blocco legale accanto. */
+.site-footer__legal-links .tag {
+  padding: 8px 16px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+/* La voce che punta alla pagina in cui ci si trova già. Resta cliccabile (non
+   la si disabilita: un link morto in un footer legale è peggio di uno
+   ridondante) ma si dichiara come corrente invece di promettere un altrove.
+   `aria-current="page"` nel markup fa il lavoro per gli screen reader, questa
+   regola lo rende visibile anche a chi guarda. */
+.site-footer__legal-links .tag[aria-current="page"] {
+  border-color: rgba(var(--color-magenta-rgb), 0.55);
+  background: rgba(var(--color-magenta-rgb), 0.14);
+  color: var(--color-magenta);
+  text-decoration: none;
+}
+
+/* Variante per privacy.html e cookie.html: solo la fascia legale, senza le tre
+   colonne di navigazione — lì il footer non deve rilanciare il sito, deve
+   chiudere il documento. Niente `padding-right` riservato al back to top,
+   che su quelle pagine non esiste: lo spazio a destra resta vuoto e basta. */
+.site-footer--compact {
+  padding-top: var(--space-12);
+}
+
+.site-footer--compact .site-footer__bottom {
+  padding-right: 0;
+}
+
+@media (max-width: 900px) {
+  /* Sotto i 900px "Esplora" e "Contatti" non hanno più spazio per stare a
+     fianco del brand senza schiacciarsi: due colonne, col brand che sale
+     sopra a tutta larghezza. */
+  .site-footer__top {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .site-footer__brand {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 760px) {
+  /* A una colonna tutto si impila e si centra: è lo stesso trattamento che
+     il footer aveva prima di diventare a tre blocchi, riservato qui alla
+     larghezza in cui tre blocchi affiancati non ci stanno più. */
+  .site-footer__top {
+    grid-template-columns: 1fr;
+    gap: var(--space-8);
+    text-align: center;
+  }
+
+  .site-footer__brand,
+  .site-footer__col {
+    align-items: center;
+  }
+
+  .site-footer__bottom {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: var(--space-5);
+    /* In colonna il bottone "torna su" sale sopra la quick bar (vedi la sua
+       regola in @media max-width:760px) e non è più affiancato a questa
+       riga: il margine riservato lì sopra tornerebbe solo a scentrare il
+       blocco. */
+    padding-right: 0;
+  }
+
+  .site-footer__legal-block {
+    align-items: center;
+  }
+}
+
+/* ==========================================================================
+   Site nav (sticky header)
+   ========================================================================== */
+
+/* Due pesi invece di uno. Sopra la hero la barra è quasi solo sfocatura, così
+   non taglia in due l'immagine; appena si scorre si densifica e prende il
+   filo magenta. La classe .is-scrolled la mette lo script.
+   Il bordo magenta pieno a tutta larghezza è stato sostituito da una hairline
+   bianca appena accennata: era l'ennesima linea colorata in una pagina che ne
+   aveva troppe, e sulla nav pesava a ogni scroll. */
+/* Griglia a tre colonne, non `space-between`. Con lo space-between i tre
+   blocchi si spartiscono l'avanzo in parti uguali, ma logo (81px) e azioni
+   (198px) non sono larghi uguale: il menu finiva 58px a sinistra del centro
+   della barra — misurato. Sembrava un errore di allineamento perché lo era.
+   Con `1fr auto 1fr` le due colonne laterali sono uguali per costruzione e il
+   menu sta sull'asse della pagina, che è lo stesso asse su cui sono centrate
+   quasi tutte le sezioni.
+
+   A riposo la barra è completamente trasparente: niente fondo, niente
+   sfocatura. Prima partiva con `rgba(0,0,0,0.32)` più un blur, quindi sopra la
+   hero si vedeva comunque una fascia — e la hero è costruita apposta per
+   arrivare fino in cima. Il fondo compare solo con `.is-scrolled`, che è
+   quando serve davvero: quando sotto la barra passa il contenuto. */
+.site-nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 200;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: var(--space-6);
+  /* Orizzontale dal token di sezione, non da uno suo: è già 32px da desktop e
+     20 da mobile, cioè esattamente il margine su cui è allineato il contenuto
+     sotto. Così il logo sta sulla stessa verticale del titolo della prima
+     sezione invece che su una parallela vicina. */
+  padding: var(--space-4) var(--section-px);
+  background: transparent;
+  border-bottom: 1px solid transparent;
+  transition: background-color 0.45s var(--ease-out-soft),
+              backdrop-filter 0.45s var(--ease-out-soft),
+              padding 0.45s var(--ease-out-soft),
+              border-color 0.45s var(--ease-out-soft);
+}
+
+.site-nav__logo { justify-self: start; }
+.site-nav__actions { justify-self: end; }
+
+/* Cambia solo la misura verticale. Con un valore orizzontale suo, questa regola
+   (0,2,0) batteva quella dentro la media query mobile (0,1,0) — le media query
+   non aggiungono specificità — e scrollando la barra passava da 20 a 32px di
+   lato: il logo scattava di dodici pixel. */
+.site-nav.is-scrolled {
+  padding: var(--space-3) var(--section-px);
+  background: rgba(0, 0, 0, 0.78);
+  backdrop-filter: blur(18px) saturate(1.3);
+  -webkit-backdrop-filter: blur(18px) saturate(1.3);
+  border-bottom-color: var(--hairline);
+}
+
+/* Filo magenta sotto la barra, visibile solo da scrollata: sostituisce il
+   bordo pieno di prima ma sfuma ai lati invece di tagliare tutto il viewport. */
+.site-nav::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -1px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(var(--color-magenta-rgb), 0.55), transparent);
+  opacity: 0;
+  transition: opacity 0.45s var(--ease-out-soft);
+  pointer-events: none;
+}
+
+.site-nav.is-scrolled::after { opacity: 1; }
+
+@media (prefers-reduced-motion: reduce) {
+  .site-nav,
+  .site-nav::after { transition: none; }
+}
+
+.site-nav__logo {
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.site-nav__logo-img {
+  height: 26px;
+  width: auto;
+  filter: drop-shadow(0 0 8px rgba(var(--color-magenta-rgb), 0.65));
+}
+
+.site-nav__links {
+  display: flex;
+  align-items: center;
+  gap: 30px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.site-nav__links a {
+  color: var(--color-white);
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+  opacity: 0.85;
+  transition: color var(--transition-fast), opacity var(--transition-fast);
+}
+
+.site-nav__links a:hover {
+  color: var(--color-magenta);
+  opacity: 1;
+}
+
+/* Sezione corrente. Non solo colore: c'è anche la sottolineatura, così
+   l'indicazione non è veicolata dal solo canale cromatico. */
+.site-nav__links a.is-active {
+  color: var(--color-magenta);
+  opacity: 1;
+  text-decoration: underline;
+  text-underline-offset: 6px;
+}
+
+.site-nav__actions {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  flex-shrink: 0;
+}
+
+.site-nav__icon-link {
+  position: relative;
+  display: inline-flex;
+  line-height: 0;
+}
+
+/* Area cliccabile invisibile ≥44×44px senza alterare la dimensione
+   visiva dell'icona né lo spazio occupato nel layout (WCAG target size). */
+.site-nav__icon-link::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 44px;
+  height: 44px;
+  transform: translate(-50%, -50%);
+}
+
+.site-nav__icon-link svg { transition: filter var(--transition-fast); }
+
+.site-nav__icon-link:hover svg {
+  filter: drop-shadow(0 0 6px rgba(var(--color-magenta-rgb), 0.8));
+}
+
+.site-nav__toggle {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  padding: 4px;
+  cursor: pointer;
+}
+
+/* ==========================================================================
+   Site nav (mobile fullscreen overlay)
+   ========================================================================== */
+
+html.nav-open,
+body.nav-open {
+  overflow: hidden;
+}
+
+.site-nav__overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 300;
+  display: flex;
+  flex-direction: column;
+  background: radial-gradient(circle at 50% 0%, #0d0d0d 0%, #000000 65%);
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-16px);
+  transition: opacity 0.3s ease, transform 0.3s ease, visibility 0s linear 0.3s;
+}
+
+.site-nav__overlay.is-open {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+  transition: opacity 0.3s ease, transform 0.3s ease, visibility 0s linear 0s;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .site-nav__overlay { transition: opacity 0.01s linear, visibility 0.01s linear; }
+}
+
+.site-nav__overlay-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 20px;
+  border-bottom: 1px solid rgba(var(--color-magenta-rgb), 0.25);
+}
+
+.site-nav__overlay-actions {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.site-nav__overlay-close {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  padding: 4px;
+  cursor: pointer;
+}
+
+.site-nav__overlay-center {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 44px;
+  padding: 32px 24px;
+}
+
+.site-nav__overlay-links {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 30px;
+}
+
+.site-nav__overlay-links a {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: clamp(32px, 10vw, 46px);
+  letter-spacing: 0.5px;
+  color: var(--color-white);
+  text-decoration: none;
+  transition: color var(--transition-fast), text-shadow var(--transition-fast);
+}
+
+.site-nav__overlay-links a:hover,
+.site-nav__overlay-links a:active,
+.site-nav__overlay-links a.is-active {
+  color: var(--color-magenta);
+  text-shadow: 0 0 16px rgba(var(--color-magenta-rgb), 0.7);
+}
+
+.site-nav__overlay-links a.is-active {
+  text-decoration: underline;
+  text-underline-offset: 8px;
+}
+
+/* Soglia propria del nav, staccata dal breakpoint mobile generale (760px):
+   da quando "Esplora" è salito da 3 a 6 voci, il centro della griglia pesa
+   il doppio e sotto ~1100px spinge azioni e logo fuori dal loro spazio — il
+   sintomo era "Prenota ora" che andava a capo su due righe. 1180px lascia
+   un margine di sicurezza misurato, non il minimo indispensabile. */
+@media (max-width: 1180px) {
+  /* Il menu centrale non c'è (è nell'overlay), quindi la griglia a tre colonne
+     non ha più il suo elemento di mezzo e le azioni scivolerebbero nella
+     colonna centrale. Con due soli blocchi il flex torna a essere lo strumento
+     giusto: non c'è nessun asse da rispettare, solo due estremi da separare. */
+  .site-nav {
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .site-nav__links { display: none; }
+
+  .site-nav__cta { display: none; }
+
+  .site-nav__toggle { display: flex; }
+}
+
+/* ==========================================================================
+   Touch target (WCAG 2.5.5 — area cliccabile minima 44×44)
+   ========================================================================== */
+
+/* Stesso pattern già usato per .site-nav__icon-link:
+   uno pseudo-elemento estende l'area cliccabile a 44×44 senza ingrandire la
+   grafica né occupare spazio nel layout (header e overlay restano invariati). */
+.site-nav__logo,
+.site-nav__toggle,
+.site-nav__overlay-close,
+.site-nav__links a,
+.site-footer__icon-link,
+.btn--xs,
+.tag--link {
+  position: relative;
+}
+
+.site-nav__logo::before,
+.site-nav__toggle::before,
+.site-nav__overlay-close::before,
+.site-nav__links a::before,
+.site-footer__icon-link::before,
+.btn--xs::before,
+.tag--link::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 100%;
+  height: 100%;
+  min-width: 44px;
+  min-height: 44px;
+  transform: translate(-50%, -50%);
+}
+
+/* Qui invece il target può crescere davvero: sono righe in colonna e c'è
+   spazio. Il testo resta a 15px, cresce solo l'area. */
+.location__link {
+  min-height: 44px;
+}
+
+/* Distanza ≥8px fra target adiacenti. Le icone sono larghe 20-32px ma la loro
+   area cliccabile è 44: con i gap precedenti (18-20px) le aree si
+   sovrapponevano. */
+.site-nav__actions { gap: 28px; }
+.site-nav__overlay-actions { gap: 28px; }
+
+/* ==========================================================================
+   Quick bar (bottom bar mobile)
+   ========================================================================== */
+
+/* Da mobile la CTA di prenotazione dell'header è nascosta: questa barra è
+   l'unico punto di prenotazione persistente. Max 3 voci, una sola primaria. */
+.quick-bar { display: none; }
+
+/* Era una fascia piena agganciata ai tre bordi dello schermo, con dentro un
+   rettangolo magenta: un elemento di sistema operativo, non di questo sito.
+   Ora parla la stessa lingua di .hero__info — pillola staccata dai bordi,
+   vetro sfocato, filo bianco sottilissimo — così l'ultima cosa che si vede
+   scorrendo appartiene alla pagina invece di starci sopra. */
+@media (max-width: 760px) {
+  .quick-bar {
+    display: grid;
+    grid-template-columns: 1fr 1.15fr 1fr;
+    align-items: center;
+    gap: 4px;
+    position: fixed;
+    left: 12px;
+    right: 12px;
+    bottom: calc(12px + env(safe-area-inset-bottom));
+    z-index: 900;
+    padding: 6px;
+    /* Doppio strato come sulla barra della hero: il velo bianco dà il
+       riflesso del vetro, il fondo scuro sotto garantisce che il testo resti
+       leggibile anche sopra una foto chiara. */
+    background:
+      linear-gradient(rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.02)),
+      rgba(8, 8, 10, 0.78);
+    border: 1px solid rgba(255, 255, 255, 0.13);
+    border-radius: var(--radius-pill);
+    backdrop-filter: blur(16px) saturate(1.3);
+    -webkit-backdrop-filter: blur(16px) saturate(1.3);
+    box-shadow: 0 14px 36px -10px rgba(0, 0, 0, 0.85);
+    /* Il 100% da solo non basta più: la barra ora è staccata dal fondo, e
+       senza aggiungere lo stacco resterebbe una fetta visibile a riposo. */
+    transform: translateY(calc(100% + 24px));
+    transition: transform 0.5s var(--ease-premium);
+  }
+
+  .quick-bar.is-visible { transform: none; }
+
+  /* Tipografia allineata alla striscia informazioni della hero: stesso corpo,
+     stesso peso, stesso tracking, stessa opacità. Erano 600 e 0.2px contro 500
+     e 0.3px — un peso intero più pesante e un filo più stretto, che su tre
+     etichette corte si legge come "grassetto" invece che come "barra".
+
+     Il peso più leggero con un tracking appena più largo è ciò che separa una
+     barra di sistema da una barra disegnata: il grassetto grida per farsi
+     leggere, la spaziatura lo ottiene senza alzare la voce. */
+  .quick-bar__item {
+    min-height: 46px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--radius-pill);
+    font-size: var(--text-base);
+    font-weight: 500;
+    letter-spacing: 0.3px;
+    color: var(--color-white);
+    opacity: 0.92;
+    text-decoration: none;
+    transition: background-color var(--transition-fast), opacity var(--transition-fast);
+  }
+
+  .quick-bar__item:active { opacity: 1; }
+
+  .quick-bar__item:active { background: rgba(255, 255, 255, 0.08); }
+
+  /* Pillola dentro la pillola. Il glow è quello tenue: è pur sempre la CTA
+     principale da mobile, ma sta dentro un contenitore già vetroso e un alone
+     forte lo farebbe sbavare sul bordo. */
+  /* Via Anton. È il carattere display del sito, tarato sui 150px dell'orario e
+     sugli 84 dei titoli: dentro una barra alta 46px non legge come "brand",
+     legge come un'etichetta urlata, ed era la ragione principale per cui
+     questa barra sembrava più rumorosa della striscia della hero.
+
+     Resta in Inter come le altre due voci, ma a 600 invece di 500: sul pieno
+     magenta il testo nero ha bisogno di un filo di corpo in più per staccare,
+     e mezzo peso di differenza è quanto basta a dire "questa è l'azione"
+     senza cambiare alfabeto a metà barra. */
+  .quick-bar__item--primary {
+    background: var(--color-magenta);
+    color: var(--color-black);
+    font-size: var(--text-base);
+    font-weight: 600;
+    letter-spacing: 0.3px;
+    opacity: 1;
+    box-shadow: var(--glow-soft);
+  }
+
+  .quick-bar__item--primary:active { background: #c400d6; }
+
+  /* Spazio sotto il footer per non finire coperti dalla barra: 46 di altezza
+     + 12 di padding interno + 12 di stacco dal bordo, arrotondato. */
+  .site-footer { padding-bottom: calc(94px + env(safe-area-inset-bottom)); }
+
+  body.nav-open .quick-bar { display: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .quick-bar { transition: none; }
+  .nightlife__photo { transition: none; }
+}
+
+/* ==========================================================================
+   Pagine legali (privacy, cookie)
+   ========================================================================== */
+
+/* Sono pagine da leggere, non da guardare: nessun reveal, nessuna animazione,
+   nessuna foto. L'unica cosa che conta è la leggibilità di un testo lungo, e
+   quindi valgono le regole del corpo testo del sito — stessa misura stretta,
+   stessa interlinea — su una sola colonna.
+
+   Non hanno la nav del sito né la quick bar: da qui si torna indietro, non si
+   naviga. Un solo link di ritorno in cima evita di ricostruire un header
+   completo su una pagina che non ne ha bisogno. */
+.legal {
+  max-width: var(--container-narrow);
+  margin: 0 auto;
+  padding: var(--space-section) var(--section-px);
+}
+
+.legal__top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-6);
+  flex-wrap: wrap;
+  margin-bottom: var(--space-12);
+}
+
+.legal__logo img {
+  height: 26px;
+  width: auto;
+  filter: drop-shadow(0 0 8px rgba(var(--color-magenta-rgb), 0.65));
+}
+
+.legal__back {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: 44px;
+  font-size: var(--text-md);
+  font-weight: 500;
+  color: var(--color-white);
+  opacity: 0.85;
+  text-decoration: none;
+  transition: color var(--transition-fast), opacity var(--transition-fast);
+}
+
+.legal__back:hover { color: var(--color-magenta); opacity: 1; }
+
+.legal__title { margin-bottom: var(--space-4); }
+
+/* Data di ultimo aggiornamento: piccola, ma è un'informazione che in un
+   documento legale ha valore, non un dettaglio di servizio. */
+.legal__meta {
+  margin: 0 0 var(--space-12);
+  font-size: var(--text-md);
+  color: var(--color-white);
+  opacity: 0.55;
+}
+
+.legal h2 {
+  margin: var(--space-12) 0 var(--space-4);
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: clamp(22px, 2.2vw, 28px);
+  line-height: 1.15;
+  letter-spacing: -0.012em;
+  color: var(--color-white);
+}
+
+.legal h3 {
+  margin: var(--space-8) 0 var(--space-3);
+  font-size: var(--text-lg);
+  font-weight: 600;
+  color: var(--color-white);
+}
+
+.legal p,
+.legal li {
+  font-size: var(--text-lg);
+  line-height: 1.75;
+  color: var(--color-white);
+  opacity: 0.85;
+}
+
+.legal p { margin: 0 0 var(--space-4); }
+
+.legal ul { margin: 0 0 var(--space-4); padding-left: var(--space-5); }
+.legal li { margin-bottom: var(--space-2); }
+.legal li::marker { color: var(--color-magenta); }
+
+/* I nomi di dominio vanno letti carattere per carattere — è la differenza fra
+   maps.gstatic.com e maps.googleapis.com — quindi monospazio e una superficie
+   che li stacchi dal discorso. */
+.legal code {
+  font-size: 0.92em;
+  padding: 2px 6px;
+  border-radius: var(--radius-sm);
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid var(--hairline);
+  white-space: nowrap;
+}
+
+.legal a {
+  color: var(--color-magenta);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.legal a:hover { text-decoration-thickness: 2px; }
+
+/* I segnaposto da compilare prima della pubblicazione si devono vedere: in un
+   documento legale un `[P_IVA]` rimasto dentro è un errore che costa, e deve
+   saltare all'occhio invece di mimetizzarsi nel testo. */
+.legal mark {
+  background: rgba(var(--color-magenta-rgb), 0.18);
+  color: var(--color-magenta);
+  padding: 0 6px;
+  border-radius: var(--radius-sm);
+  font-weight: 600;
+}
+
+.legal__note {
+  margin: var(--space-12) 0 0;
+  padding: var(--space-6);
+  border: 1px solid var(--hairline);
+  border-left: 2px solid rgba(var(--color-magenta-rgb), 0.5);
+  border-radius: var(--radius-md);
+  background: var(--surface-1);
+}
+
+.legal__note p { margin: 0; font-size: var(--text-md); opacity: 0.8; }
+
+/* ==========================================================================
+   Back to top
+   ========================================================================== */
+
+/* È un controllo di servizio, quindi parla la lingua che questa pagina usa per
+   i controlli di servizio — lo stesso vetro di `.hero__info` e della quick bar,
+   velo bianco su fondo scuro, filo sottilissimo, sfocatura — e non quella delle
+   insegne al neon, che qui sarebbe una promessa sproporzionata: portare in cima
+   non è l'azione principale di niente. Il glow resta una risorsa razionata: a
+   riposo non ce n'è, arriva solo al passaggio del mouse.
+
+   Cerchio e non pillola: in questo foglio `--radius-pill` è la forma dei
+   controlli con un'etichetta da leggere. Qui c'è solo un'icona, e un cerchio
+   dice "azione singola" senza fingersi un bottone testuale. */
+.back-to-top {
+  position: fixed;
+  right: var(--space-8);
+  bottom: var(--space-8);
+  /* Sotto la quick bar (900) e sotto l'overlay del menu (300 ma a schermo
+     pieno), sopra la grana (100) e la nav (200). */
+  z-index: 800;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  padding: 0;
+  border-radius: 50%;
+  color: var(--color-magenta);
+  cursor: pointer;
+  background:
+    linear-gradient(rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.02)),
+    rgba(8, 8, 10, 0.78);
+  border: 1px solid rgba(255, 255, 255, 0.13);
+  backdrop-filter: blur(16px) saturate(1.3);
+  -webkit-backdrop-filter: blur(16px) saturate(1.3);
+  box-shadow: 0 14px 36px -10px rgba(0, 0, 0, 0.85);
+
+  /* `visibility` oltre all'opacità: con la sola opacità il bottone resterebbe
+     nell'ordine di tabulazione anche da invisibile, e chi naviga da tastiera
+     inciamperebbe in un controllo che non vede. Il ritardo sulla visibility
+     serve a farla scattare a dissolvenza finita, non a metà. */
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(12px);
+  transition: opacity 0.35s var(--ease-out-soft),
+              transform 0.35s var(--ease-premium),
+              visibility 0s linear 0.35s,
+              border-color var(--transition-fast),
+              box-shadow var(--transition-fast);
+}
+
+.back-to-top.is-visible {
+  opacity: 1;
+  visibility: visible;
+  transform: none;
+  transition: opacity 0.35s var(--ease-out-soft),
+              transform 0.35s var(--ease-premium),
+              visibility 0s linear 0s,
+              border-color var(--transition-fast),
+              box-shadow var(--transition-fast);
+}
+
+@media (hover: hover) {
+  .back-to-top:hover {
+    border-color: rgba(var(--color-magenta-rgb), 0.7);
+    box-shadow: var(--glow-soft), 0 14px 36px -10px rgba(0, 0, 0, 0.85);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .back-to-top {
+    transition: opacity 0.2s linear, visibility 0s linear;
+    transform: none;
+  }
+}
+
+@media (max-width: 760px) {
+  /* Da mobile il fondo dello schermo è occupato dalla quick bar, che è il punto
+     di prenotazione persistente e non va mai coperta. Il bottone sale sopra di
+     lei con gli stessi numeri che il footer usa per tenersene libero: 46 di
+     altezza + 12 di padding interno + 12 di stacco dal bordo. */
+  .back-to-top {
+    right: var(--space-5);
+    bottom: calc(94px + env(safe-area-inset-bottom));
+    width: 44px;
+    height: 44px;
+  }
+
+  /* Col menu a schermo pieno aperto non deve restare niente che galleggi. */
+  body.nav-open .back-to-top { display: none; }
+}
+
+/* ==========================================================================
+   Responsive
+   ========================================================================== */
+
+/* Tablet */
+@media (max-width: 980px) {
+  .menu__grid { grid-template-columns: repeat(2, 1fr); }
+
+  /* Due colonne: una foto per riga a tutta larghezza, il pannello in fondo.
+     Il posizionamento esplicito della griglia a 3 colonne va riscritto tutto,
+     altrimenti `grid-column: 3` punta a una colonna che non esiste più. */
+  .gallery__grid {
+    grid-template-columns: repeat(2, 1fr);
+    grid-auto-rows: 240px;
+  }
+
+  .gallery__item--wide  { grid-column: 1 / 3; grid-row: 1; }
+  .gallery__item--wide2 { grid-column: 1 / 3; grid-row: 2; }
+  .gallery__item--cta   { grid-column: 1 / 3; grid-row: 3; }
+}
+
+@media (max-width: 900px) {
+  .about,
+  .location {
+    flex-direction: column;
+  }
+
+  .about__media,
+  .about__text,
+  .location__info,
+  .location__map-col {
+    max-width: 100%;
+    /* flex-basis:420px era pensato per la larghezza a riga (desktop); in
+       colonna diventerebbe un'altezza minima forzata, lasciando spazio
+       vuoto sotto contenuti più corti del valore. */
+    flex-basis: auto;
+  }
+}
+
+/* Mobile */
+@media (max-width: 760px) {
+  :root {
+    --section-px: var(--space-5);
+  }
+
+  .about { gap: var(--space-8); }
+
+  .menu { padding-bottom: 90px; }
+
+  .menu__grid { grid-template-columns: 1fr; }
+
+  /* Colonna singola. Niente più tile da nascondere: sono quattro in tutto e
+     ci stanno tutte, CTA compresa. Gli span vanno azzerati esplicitamente,
+     altrimenti `span 2` su una griglia a una colonna resta valido e la riga
+     della tall continua a valere doppio. */
+  .gallery__grid {
+    grid-template-columns: 1fr;
+    grid-auto-rows: auto;
+    gap: 14px;
+  }
+
+  .gallery__item--wide,
+  .gallery__item--wide2,
+  .gallery__item--cta {
+    grid-column: auto;
+    grid-row: auto;
+  }
+
+  /* In colonna l'altezza la detta la proporzione, non una riga di griglia. */
+  .gallery__item--wide { aspect-ratio: 16 / 10; }
+  .gallery__item--wide2 { aspect-ratio: 16 / 10; }
+  .gallery__item--cta { aspect-ratio: 16 / 11; }
+
+  /* In riga le tre polaroid scenderebbero sotto i 100px di lato: illeggibili.
+     In colonna c'è spazio, quindi le rotazioni restano — ridotte, perché
+     impilate verticalmente basta un accenno per non sembrare una griglia. */
+  .nightlife__photos {
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .nightlife__photo {
+    flex: 0 0 auto;
+    width: 100%;
+    max-width: 300px;
+    border-width: 6px;
+    border-bottom-width: 16px;
+  }
+
+  .nightlife__photo--1 { transform: rotate(-1.5deg); }
+  .nightlife__photo--2 { transform: rotate(1.5deg); }
+  .nightlife__photo--3 { transform: rotate(-1deg); }
+
+  /* Da mobile la filigrana cambia due cose.
+
+     Una parola invece di due. A 390px la stringa doppia occupava 370px su 390
+     e arrivava tagliata contro entrambi i bordi: così non leggeva come fondo,
+     leggeva come testo troncato. Una parola sola sta larga 3.54 volte il corpo
+     (due sono 7.78, misurato), quindi a 26vw riempie il 92% della larghezza
+     restando intera.
+
+     E scende in fondo. Al 26% cadeva sui badge — 25px di sovrapposizione
+     misurati — proprio dove ci sono tre pill da leggere, ed era il punto
+     peggiore possibile. Fra le foto e l'occhiello ci sono solo 28px, mentre
+     sotto la CTA il padding di sezione lascia il nero completamente libero: è
+     l'unico posto della colonna dove una filigrana di questa taglia non passa
+     sopra a qualcosa.
+
+     Lo scostamento è derivato dal token e non scritto a mano: con `-104px`
+     fisso era accoppiato per coincidenza al valore che il padding aveva in
+     quel momento, e la prima ritoccata alla scala verticale l'avrebbe
+     scollato senza che nulla segnalasse l'errore. Così invece la parola resta
+     agganciata al vuoto fra le sezioni qualunque valore prenda. */
+  .nightlife__watermark {
+    top: auto;
+    bottom: calc((var(--space-section) + 32px) * -1);
+    font-size: 23vw;
+    transform: translate(-50%, 0);
+  }
+
+  .nightlife__watermark::after {
+    content: none;
+  }
+
+  .location__map { height: 280px; }
+
+  .hero__scroll-indicator { display: none; }
+}
+
+@media (max-width: 480px) {
+  .hero__actions { gap: var(--space-3); }
+
+  .btn { padding: 16px 32px; font-size: 17px; }
+
+  .hero__info {
+    flex-direction: column;
+    gap: 10px;
+    /* In colonna il contenitore diventa alto: col raggio a pillola si
+       arrotonderebbe come una capsula verticale. Raggio fisso e padding
+       riequilibrato lo riportano a essere un pannello. */
+    border-radius: 18px;
+    padding: 16px 22px;
+  }
+
+  .hero__info-item + .hero__info-item {
+    padding-left: 0;
+    border-left: none;
+  }
+}
